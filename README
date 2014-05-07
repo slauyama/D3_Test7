@@ -1,0 +1,84 @@
+README
+This project is supposed to take in data of data centers and display the data visually
+Tools Used
+coffeescript - http://coffeescript.org/
+d3 - http://d3js.org/
+x3dom - http://www.x3dom.org/
+sass - http://sass-lang.com/
+jade - http://jade-lang.com/
+
+To Do
+Hover over data racks Tool tips 
+	http://www.x3dom.org/x3dom/test/functional/indexedLineSet.html
+Use JSON or CSV as opposed to raw data (consider building conversion for larger sets of data)
+GulpFile
+	Live Reload
+	Gulp-change / cache / newer / remember
+Put a text/label on every rack
+	view-source:http://x3dom.org/x3dom/example/x3dom_text.html
+Add a filter for the racks
+Interactive buttons within the cavnas
+	http://www.x3dom.org/?page_id=1483
+Need to use more D3 management
+Figure lighting to make better
+Want to update animation popping up of boxes
+Use the minified javascript
+Test in IE8
+
+Bugs / Issues
+Weird modifying views. Changing the setting on the views after toggling them around for a bit
+	Cant use debounce. Need to timeout all functions
+Need to figure out how it rearranges the leaders.
+
+5/5
+Implemented a shuffle mode
+Added Lights. Add light perpendicular to Front
+	-Solved Weird Lighting issue on one side of rack
+Added side view
+Build div for looking at top values of racks
+	Re arranged rack leaders on bottom
+Fixed the Gulp Issue with error hadnling
+
+4/30
+Figure out how to properly concat coffeescript files
+Gulp - Develop error awareness.
+Implemented Jade
+Fixed Gulp Clean call to remove .sass-caches
+Added back up if readings (power, weight, heat) are not numeric
+	Consider no Temp, Weight Power Values
+
+4/28
+Made Grid Percise and scaleable
+Views work for different sacles
+Used more coffeescript
+
+4/21
+Figured out why the last piece of the grid is not working
+Implemented Gulp / Retired TEst,bat
+Split javascript into different files
+
+4/18
+Set Up Grid (with Toggle on off)
+
+4/16
+Hover Toggle
+Constrain movement
+Update the views
+Gave small seperation between racks
+Modify Bounding box so it re scales
+Make 3D
+Full Display of 3D racks
+
+4/1/2014
+Adding color coding for different levels
+Added text displays for weight power and temp
+Fixed the scale of the box
+Implelement the correct intervals 
+
+3/17/2014
+Generate a bounding box
+Modify dropdown on change to create change within graph
+Change Floor plan id
+
+3/14/2014
+Update all floop plan id's at start of load.

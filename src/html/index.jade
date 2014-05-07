@@ -1,0 +1,63 @@
+doctype html
+html 
+	head
+		meta(http-equiv="X-UA-Compatible" content="chrome=1")
+		meta(http-equiv="Content-Type" content="text/html;charset=utf-8")
+		title X3DOM Test 6
+		script(type="text/javascript" src="http://mbostock.github.com/d3/d3.js")
+		script(type="text/javascript" src="http://x3dom.org/x3dom/example/x3dom.js")
+		
+		link(rel="stylesheet" type="text/css" href="css/main.min.css")
+	
+	body
+		- var iterator = 0
+		div.rack-view-options.fltLeft
+			h2 Camera Options:
+			div.buttons.camera-option
+				each view, index in["Top View", "Front View", "Left View", "Right View", "Back View", "Perspective"]
+					- var className = !index ? ' selected-view' : ''
+					input.button(type="button", class="view"+index, class=className,  value=view)
+			
+			h2 Color Options:
+			div.buttons.color-option
+				each color, index in ["Power", "Weight", "Temperature"]
+					- var className = !index ? ' selected-color' : ''
+					input.button(type="button" class=className value=color)
+			
+			div.formGroup
+				label(for="grid-toggle") Display Grid:
+				input#grid-toggle.checkbox(type="checkbox" checked=true)
+				label(for="view-shuffle") Shuffle Views:
+				input#view-shuffle.checkbox(type="checkbox" checked=false)
+
+		div.fltClear
+		x3d#x3dElement.fltLeft
+		div#rack-data
+			h2 Rack Information:
+			ul.alignRight.fltLeft
+				each descriptor in ["Component ID", "Name", "Power (C/P/M)", "Temperature (C/P/M)", "Weight (C/P/M)", "Used Units (C/P)","Largest Unit Location", "Largest Unit Size", "Power Actual Derivation"]
+					li= descriptor + ": "
+
+			ul(class="fltRight")
+				li#ComponentID-Data 1471
+				li#Name-Data 50M
+				li#Power-Data 115/0/300
+				li#Temperature-Data 16/0/35000
+				li#Weight-Data 16/0/500
+				li#UsedUnits-Data 1/0
+				li#UnitLocation-Data 1
+				li#UnitSize-Data 41
+				li#PowerAD-Data 115
+			p.fltClear.footnotes *C - Current, P - Planned, M - Max
+			br/
+
+		div#leader-data.fltLeft.fltClear
+			h2 Rack Leaders:
+			ul#leader-list
+				each descriptor in ["Power", "Temperature", "Weight", "Used Units","Largest Unit Location", "Largest Unit Size"]
+					ol(id="#{descriptor.replace(' ','-').toLowerCase()}-leader" class="leader")
+						h3= descriptor + ":"
+						each index in [1,2,3]
+							li(class="leader-item #{descriptor.replace(/\s/g,'-').toLowerCase()+index}") N/A
+
+		script(src="js/main.js")

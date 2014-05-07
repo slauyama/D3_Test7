@@ -1,0 +1,146 @@
+@mixin transition($transition-time: 1s, $transition-property: all, $method: linear) {
+    -webkit-transition: $transition-property $transition-time $method;
+    -moz-transition: $transition-property $transition-time $method;
+    -ms-transition: $transition-property $transition-time $method;
+    -o-transition: $transition-property $transition-time $method;
+    transition: $transition-property $transition-time $method;
+}
+
+@mixin gradiant-color($col1, $col2) {
+	background-image: linear-gradient(to bottom, $col1, $col2);
+	background-image: -o-linear-gradient(bottom, $col1, $col2);
+	background-image: -ms-linear-gradient(bottom, $col1, $col2);
+	background-image: -moz-linear-gradient(bottom, $col1, $col2);
+	background-image: -webkit-linear-gradient(bottom, $col1, $col2);
+}
+
+@mixin ellipsis-control() {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	
+	&:hover {
+		overflow: visible;
+		white-space: normal;
+	}	
+}
+
+@mixin gradiant-color-both($col1, $col2) {
+	@include gradiant-color($col1, $col2);
+	
+	&:hover {@include gradiant-color($col2, $col1);}
+}
+
+$grey-top: #efefef;
+$grey-bottom: #dedede;
+$selected-top: #bcbcde;
+$selected-bottom: #9090cd;
+$setPixelSize: 10px;
+$setPercentSize: 10%;
+
+body {
+	font-family: "Lato" "Open Sans", Arial, sans-serif;
+	font-weight: 300;
+	margin: $setPixelSize;
+}
+
+h2 {
+	font-weight: 300;
+	font-size: 140%;
+}
+
+h3 {
+	font-weight: 300;
+	font-size: 110%;
+}
+
+.rack-view-options {
+
+	.buttons {
+		margin: 1% 0px $setPixelSize 0px;
+
+		.button {
+			@include gradiant-color-both($grey-bottom, $grey-top);
+			display: inline-block;
+			border: 1px solid #999;
+			padding: 1% $setPixelSize
+		}
+
+		.selected-view, .selected-color {
+			@include gradiant-color-both($selected-bottom, $selected-top);
+		}
+	}	
+	
+	.checkbox {
+			vertical-align: baseline;
+			display: inline-block;
+			@include gradiant-color-both($grey-bottom, $grey-top);
+	}
+}
+
+x3d { 
+	position: relative;
+	margin: $setPixelSize;
+
+	canvas {
+		border: 1px solid black;
+	}
+
+	button {
+		position: absolute;
+	    z-index: 1;
+	    width: 70px;
+	    height: 24px;
+	    border: none;
+	    background-color: #fff;
+	    color: #202021;
+	    &#zoom-in {
+	    	top: 1px;
+	    	left: 1px;
+	    }
+	    &#zoom-out {
+	    	top: 25px;
+	    	left: 1px;
+	    }
+	    &:hover {
+	    	background-color: #fff - 20;
+	    }
+
+	}
+}
+
+#rack-data {
+	display: inline-block;
+	margin: $setPixelSize;
+	border: 1px solid #000;
+	padding: $setPixelSize;
+	width: 275px;
+
+	.footnotes {
+		padding: 5% 0% 0% 0%;
+		font-size: 75%;
+	}
+}
+
+#leader-data {
+	margin: 5px 0px;
+	padding: $setPixelSize;
+	width: 760px;
+
+	#leader-list {
+		
+		.leader {
+			margin: $setPixelSize;
+			width: 225px;
+			float: left;
+			list-style-type:decimal;
+			list-style-position:inside;
+
+			.leader-item {
+				margin-left: $setPixelSize;
+				width: 225px;
+				@include ellipsis-control();
+			}
+		}
+	}
+}
