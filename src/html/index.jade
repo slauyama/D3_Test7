@@ -3,7 +3,7 @@ html
 	head
 		meta(http-equiv="X-UA-Compatible" content="chrome=1")
 		meta(http-equiv="Content-Type" content="text/html;charset=utf-8")
-		title X3DOM Test 6
+		title X3DOM Test 7
 		script(type="text/javascript" src="http://mbostock.github.com/d3/d3.js")
 		script(type="text/javascript" src="http://x3dom.org/x3dom/example/x3dom.js")
 		
@@ -54,10 +54,12 @@ html
 		div#leader-data.fltLeft.fltClear
 			h2 Rack Leaders:
 			ul#leader-list
-				each descriptor in ["Power", "Temperature", "Weight", "Used Units","Largest Unit Location", "Largest Unit Size"]
+				each descriptor, index in ["Power", "Temperature", "Weight", "Used Units","Largest Unit Location", "Largest Unit Size"]
 					ol(id="#{descriptor.replace(' ','-').toLowerCase()}-leader" class="leader")
 						h3= descriptor + ":"
 						each index in [1,2,3]
 							li(class="leader-item #{descriptor.replace(/\s/g,'-').toLowerCase()+index}") N/A
+					if index === 2
+						div.fltClear
 
 		script(src="js/main.js")

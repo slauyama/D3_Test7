@@ -11,6 +11,7 @@ To Do
 Hover over data racks Tool tips 
 	http://www.x3dom.org/x3dom/test/functional/indexedLineSet.html
 Use JSON or CSV as opposed to raw data (consider building conversion for larger sets of data)
+	Rerquires a local server. Cant figure out
 GulpFile
 	Live Reload
 	Gulp-change / cache / newer / remember
@@ -28,7 +29,10 @@ Test in IE8
 Bugs / Issues
 Weird modifying views. Changing the setting on the views after toggling them around for a bit
 	Cant use debounce. Need to timeout all functions
+
+5/7 
 Need to figure out how it rearranges the leaders.
+	-Added a div clear between the three lists
 
 5/5
 Implemented a shuffle mode

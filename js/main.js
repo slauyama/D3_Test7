@@ -307,6 +307,7 @@
     shapesEnter.append('box').data(data).attr('size', function(d) {
       return d.floorPlanWidth + ' ' + (d.floorPlanHeight - 0.1) + ' ' + d.rackUnitHeight;
     });
+    transforms.exit();
     topDataRacks(data);
   };
 

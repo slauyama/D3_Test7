@@ -151,6 +151,24 @@ display = ( data ) ->
    shapesEnter.append('box').data(data)
       .attr('size', (d) -> d.floorPlanWidth + ' ' + (d.floorPlanHeight - 0.1) + ' ' + d.rackUnitHeight)
 
+   transforms.exit()
+
+   # shapesEnter2 = transforms.enter().append('transform')
+   #    .append('shape').data(data).attr('id', (d)-> 'text'+d.componentID).attr('class', 'rack')
+
+   # transforms.transition().attr('translation', (d, i) -> d.xPosition + ' ' + d.yPosition + " " + d.rackUnitHeight)
+
+   # shapesEnter2.append('appearance').append('material')
+
+   # scene.selectAll('material').data(data).attr('diffuseColor', (d)-> setRackColor(d))
+
+   # shapesEnter2.append('text')
+   #       .data(data).attr('solid', true).attr('string', (d) -> d.name)
+   #       .append('fontstyle')
+   #          .attr('family', 'sans-serif').attr('size', '0.8')
+
+   # transforms.exit()
+
    topDataRacks(data)
 
    return
