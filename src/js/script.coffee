@@ -81,46 +81,36 @@ rackDataFunc = (data) ->
    console.log "justforshure"
    return
 
+findMaxNumber = (data, property, limit = HIGH_NUM) ->
+   d3.max(data, (d) -> 
+      if typeof d[property.toString()] is "number" and d[property.toString()] < limit
+         return d[property.toString()]
+   )
+
 topThreeLeader = (data, property, className, units) ->
    max = []
-   max[0] = d3.max(data, (d) -> 
-      if typeof d[property.toString()] is "number"
-         return d[property.toString()]
-   )
+   max[0] = findMaxNumber(data, property)
+   max[1] = findMaxNumber(data, property, max[0])
+   max[2] = findMaxNumber(data, property, max[1])
 
-   max[1] = d3.max(data, (d) -> 
-      if typeof d[property.toString()] is "number" and d[property.toString()] < max[0]
-         return d[property.toString()]
-   )
-   
-   max[2] = d3.max(data, (d) -> 
-      if typeof d[property.toString()] is "number" and d[property.toString()] < max[1]
-         return d[property.toString()]
-   )
+   counter = 0
+   while counter < 3
+      dataSubset = data.filter((d)-> d[property.toString()] is max[counter])
+      max[counter] = max[counter].toString() + units.toString() + " rack" + (if dataSubset.length > 1 then "s:" else ":")
+      dataSubset.forEach((d) -> max[counter] += " " + d.name)
+      max[counter] += " (#{dataSubset.length} total)"
+      counter++
 
-   dataSubset = data.filter((d)-> d[property.toString()] is max[0])
-   max[0] = max[0].toString() + units.toString() + " rack" + (if dataSubset.length > 1 then "s:" else ":")
-   dataSubset.forEach((d) -> max[0] += " " + d.name)
-   max[0] += " (#{dataSubset.length} total)"
-
-   dataSubset = data.filter((d)-> d[property.toString()] is max[1])
-   max[1] = max[1].toString() + units.toString() + " rack" + (if dataSubset.length > 1 then "s:" else ":")
-   dataSubset.forEach((d) -> max[1] += " " + d.name)
-   max[1] += " (#{dataSubset.length} total)"
-
-   dataSubset = data.filter((d)-> d[property.toString()] is max[2])
-   max[2] = max[2].toString() + units.toString() + " rack" + (if dataSubset.length > 1 then "s:" else ":")
-   dataSubset.forEach((d) -> max[2] += " " + d.name)
-   max[2] += " (#{dataSubset.length} total)"
-
-   document.getElementsByClassName(className.toString()+"1")[0].innerHTML = max[0]
-   document.getElementsByClassName(className.toString()+"2")[0].innerHTML = max[1]
-   document.getElementsByClassName(className.toString()+"3")[0].innerHTML = max[2]
+   counter = 1
+   while counter < 4
+      document.getElementsByClassName(className.toString()+counter.toString())[0].innerHTML = max[counter - 1]
+      counter++
+      
    return
 
 topDataRacks = (data) ->
-   topThreeLeader(data, "powerCurrent", "power", " ohms")
-   topThreeLeader(data, "temperatureCurrent", "temperature", "&#186;K")
+   topThreeLeader(data, "powerCurrent", "power", " watts")
+   topThreeLeader(data, "temperatureCurrent", "temperature", "BTUs")
    topThreeLeader(data, "weightCurrent", "weight", "lb")
    topThreeLeader(data, "usedUnitsCurrent", "used-units", " used units")
    topThreeLeader(data, "largestUnitLocation", "largest-unit-location", " units")
@@ -139,8 +129,6 @@ display = ( data ) ->
    shapesEnter = transforms.enter().append('transform')
       .append('shape').data(data).attr('id', (d)-> 'rack'+d.componentID).attr('class', 'rack')
 
-   # scene.selectAll('.rack').onmouseover = rackDataFuncs
-
    transforms.transition().attr('translation', (d, i) -> d.xPosition + ' ' + d.yPosition + ' 0.0')
 
    shapesEnter.append('appearance').append('material')
@@ -152,22 +140,6 @@ display = ( data ) ->
       .attr('size', (d) -> d.floorPlanWidth + ' ' + (d.floorPlanHeight - 0.1) + ' ' + d.rackUnitHeight)
 
    transforms.exit()
-
-   # shapesEnter2 = transforms.enter().append('transform')
-   #    .append('shape').data(data).attr('id', (d)-> 'text'+d.componentID).attr('class', 'rack')
-
-   # transforms.transition().attr('translation', (d, i) -> d.xPosition + ' ' + d.yPosition + " " + d.rackUnitHeight)
-
-   # shapesEnter2.append('appearance').append('material')
-
-   # scene.selectAll('material').data(data).attr('diffuseColor', (d)-> setRackColor(d))
-
-   # shapesEnter2.append('text')
-   #       .data(data).attr('solid', true).attr('string', (d) -> d.name)
-   #       .append('fontstyle')
-   #          .attr('family', 'sans-serif').attr('size', '0.8')
-
-   # transforms.exit()
 
    topDataRacks(data)
 

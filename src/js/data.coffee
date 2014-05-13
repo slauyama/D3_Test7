@@ -1,5 +1,6 @@
 RackInfoConstructor = (componentID, name, rackUnitHeight, rackWidth, rackDepth, rackOrientation, xPosition, yPosition, numberingOrigin, overlappingAllowed, coolingMax, weightMax, powerMax, largestUnitLocation, largestUnitSize, usedUnitsCurrent, usedUnitsPlanned, weightCurrent, weightPlanned, heatDissipationCurrent, heatDissipationPlanned, powerCurrent, powerPlanned, powerActual, powerActualDerivation, floorPlanWidth, floorPlanHeight) ->
                      # ComponentID  Name  RackUnitHeight  RackWidth  RackDepth  RackOrientation   XPosition  yPosition  NumberingOrigin  OverlappingAllowed  CoolingMax  WeightMax  PowerMax  LargestUnitLocation  LargestUnitSize  UsedUnitsCurrent  UsedUnitsPlanned  WeightCurrent  WeightPlanned  HeatDissipationCurrent  HeatDissipationPlanned  PowerCurrent  PowerPlanned  PowerActual  PowerActualDerivation  FloorPlanWidth  FloorPlanHeight
+
    obj = {}
    obj.componentID = componentID
    obj.name = name
@@ -20,8 +21,8 @@ RackInfoConstructor = (componentID, name, rackUnitHeight, rackWidth, rackDepth, 
    obj.usedUnitsPlanned = usedUnitsPlanned
    obj.weightCurrent = weightCurrent
    obj.weightPlanned = weightPlanned
-   obj.temperatureCurrent = heatDissipationCurrent
-   obj.temperaturePlanned = heatDissipationPlanned
+   obj.temperatureCurrent = powerCurrent * 3.412141633
+   obj.temperaturePlanned = powerPlanned * 3.412141633
    obj.powerCurrent = powerCurrent
    obj.powerPlanned = powerPlanned
    obj.powerActual = powerActual
@@ -81,7 +82,7 @@ data = []
 # data.push(new RackInfoConstructor(1509, "53U", 42, 483, 0, 0, -4150, -2650, 0, 1, 35000, 500, 10000, 1,  32, 10, 0, 0,     0,   0,     0, 0,     0, 0,    1, 1500, 700))
 
 # Configured Data
-                              #Id CmpId Name RkHt RkWh RkDh RkOrn RkX RkY #O OA ColMx WtMx PwrMx  L   LS  U   UP WtCurt WPln HtCurt HP PwrCrt PP PwrAt P  Width Height
+                            #Id CmpId Name RkHt RkWh RkDh RkOrn RkX RkY #O OA ColMx WtMx PwrMx  L   LS  U   UP WtCurt WPln HtCurt HP PwrCrt PP PwrAt P      Width Height
 data.push(new RackInfoConstructor(1470, "50M", 42, 483, 0, 0, 4250,   3650, 0, 1, 35000, 500, "NULL", 1,  41, 1,  0, 16,    0,   102,   0, "NULL",   0, 115,  1, 1500, 700))
 data.push(new RackInfoConstructor(1471, "50N", 42, 483, 0, 0, 4250,   2950, 0, 1, 35000, 500, 300,   1,  35, 5,  0, 0,     0,   0,     0, 0,     0, 0,    1, 1500, 700))
 data.push(new RackInfoConstructor(1472, "50O", 42, 483, 0, 0, 4250,   2250, 0, 1, 35000, 500, 10000, 16, 27, 15, 0, 172.8, 0,   12700, 0, 0,     0, 0,    1, 1500, 700))

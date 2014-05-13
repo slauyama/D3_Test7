@@ -1,6 +1,6 @@
 (function() {
   "use strict";
-  var HIGH_NUM, RackInfoConstructor, backDistance, bounds, clearAllSelected, data, display, frontDistance, gridSetup, isNumber, rackDataFunc, scene, setRackColor, shuffleView, sideDistance, toggleCamera, toggleColor, topDataRacks, topDistance, topThreeLeader, x3d, zoomIn;
+  var HIGH_NUM, RackInfoConstructor, backDistance, bounds, clearAllSelected, data, display, findMaxNumber, frontDistance, gridSetup, isNumber, rackDataFunc, scene, setRackColor, shuffleView, sideDistance, toggleCamera, toggleColor, topDataRacks, topDistance, topThreeLeader, x3d, zoomIn;
 
   Math.roundTo = function(num, amount) {
     if (amount == null) {
@@ -227,51 +227,40 @@
     console.log("justforshure");
   };
 
+  findMaxNumber = function(data, property, limit) {
+    if (limit == null) {
+      limit = HIGH_NUM;
+    }
+    return d3.max(data, function(d) {
+      if (typeof d[property.toString()] === "number" && d[property.toString()] < limit) {
+        return d[property.toString()];
+      }
+    });
+  };
+
   topThreeLeader = function(data, property, className, units) {
-    var dataSubset, max;
+    var counter, dataSubset, max;
     max = [];
-    max[0] = d3.max(data, function(d) {
-      if (typeof d[property.toString()] === "number") {
-        return d[property.toString()];
-      }
-    });
-    max[1] = d3.max(data, function(d) {
-      if (typeof d[property.toString()] === "number" && d[property.toString()] < max[0]) {
-        return d[property.toString()];
-      }
-    });
-    max[2] = d3.max(data, function(d) {
-      if (typeof d[property.toString()] === "number" && d[property.toString()] < max[1]) {
-        return d[property.toString()];
-      }
-    });
-    dataSubset = data.filter(function(d) {
-      return d[property.toString()] === max[0];
-    });
-    max[0] = max[0].toString() + units.toString() + " rack" + (dataSubset.length > 1 ? "s:" : ":");
-    dataSubset.forEach(function(d) {
-      return max[0] += " " + d.name;
-    });
-    max[0] += " (" + dataSubset.length + " total)";
-    dataSubset = data.filter(function(d) {
-      return d[property.toString()] === max[1];
-    });
-    max[1] = max[1].toString() + units.toString() + " rack" + (dataSubset.length > 1 ? "s:" : ":");
-    dataSubset.forEach(function(d) {
-      return max[1] += " " + d.name;
-    });
-    max[1] += " (" + dataSubset.length + " total)";
-    dataSubset = data.filter(function(d) {
-      return d[property.toString()] === max[2];
-    });
-    max[2] = max[2].toString() + units.toString() + " rack" + (dataSubset.length > 1 ? "s:" : ":");
-    dataSubset.forEach(function(d) {
-      return max[2] += " " + d.name;
-    });
-    max[2] += " (" + dataSubset.length + " total)";
-    document.getElementsByClassName(className.toString() + "1")[0].innerHTML = max[0];
-    document.getElementsByClassName(className.toString() + "2")[0].innerHTML = max[1];
-    document.getElementsByClassName(className.toString() + "3")[0].innerHTML = max[2];
+    max[0] = findMaxNumber(data, property);
+    max[1] = findMaxNumber(data, property, max[0]);
+    max[2] = findMaxNumber(data, property, max[1]);
+    counter = 0;
+    while (counter < 3) {
+      dataSubset = data.filter(function(d) {
+        return d[property.toString()] === max[counter];
+      });
+      max[counter] = max[counter].toString() + units.toString() + " rack" + (dataSubset.length > 1 ? "s:" : ":");
+      dataSubset.forEach(function(d) {
+        return max[counter] += " " + d.name;
+      });
+      max[counter] += " (" + dataSubset.length + " total)";
+      counter++;
+    }
+    counter = 1;
+    while (counter < 4) {
+      document.getElementsByClassName(className.toString() + counter.toString())[0].innerHTML = max[counter - 1];
+      counter++;
+    }
   };
 
   topDataRacks = function(data) {
