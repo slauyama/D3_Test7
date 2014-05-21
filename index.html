@@ -11,6 +11,7 @@
   <body>
     <div class="rack-view-options fltLeft">
       <h2>Camera Options:</h2>
+      <!-- div.camera-option contains all the different views you can toggle through.-->
       <div class="buttons camera-option">
         <input type="button" value="Top View" class="button view0  selected-view">
         <input type="button" value="Front View" class="button view1">
@@ -20,11 +21,14 @@
         <input type="button" value="Perspective" class="button view5">
       </div>
       <h2>Color Options:</h2>
+      <!-- div.color-option contains all the different colors you can shuffe through.-->
       <div class="buttons color-option">
         <input type="button" value="Power" class="button  selected-color">
         <input type="button" value="Weight" class="button">
         <input type="button" value="Temperature" class="button">
       </div>
+      <!-- div.formGroup contains two controls. Displaying a grid and shuffling through views-->
+      <!--  Shuffling through views has a bug-->
       <div class="formGroup">
         <label for="grid-toggle">Display Grid:</label>
         <input id="grid-toggle" type="checkbox" checked class="checkbox">
@@ -33,7 +37,10 @@
       </div>
     </div>
     <div class="fltClear"></div>
+    <!-- x3d#x3dElement will contains all 3D elements-->
     <x3d id="x3dElement" class="fltLeft"></x3d>
+    <!-- #rack-data is designed so that a hover of a rack will bring up the necessary data.-->
+    <!-- This does not work-->
     <div id="rack-data">
       <h2>Rack Information:</h2>
       <ul class="alignRight fltLeft">
@@ -62,6 +69,7 @@
     </div>
     <div id="leader-data" class="fltLeft fltClear">
       <h2>Rack Leaders:</h2>
+      <!-- ul#leader-list will show the top 3 leaders of a certain category.-->
       <ul id="leader-list">
         <ol id="power-leader" class="leader">
           <h3>Power:</h3>
@@ -81,6 +89,7 @@
           <li class="leader-item weight2">N/A</li>
           <li class="leader-item weight3">N/A</li>
         </ol>
+        <!-- Added an additional div to have 3 lists on top and 3 lists on bottom-->
         <div class="fltClear"></div>
         <ol id="used-units-leader" class="leader">
           <h3>Used Units:</h3>
@@ -102,6 +111,7 @@
         </ol>
       </ul>
     </div>
+    <!-- link to all of the scripts I have written.-->
     <script src="js/main.js"></script>
   </body>
 </html>

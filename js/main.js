@@ -1,6 +1,16 @@
 (function() {
   "use strict";
+
+  /* Largest Numbber in javascript */
   var HIGH_NUM, RackInfoConstructor, backDistance, bounds, clearAllSelected, data, display, findMaxNumber, frontDistance, gridSetup, isNumber, rackDataFunc, scene, setRackColor, shuffleView, sideDistance, toggleCamera, toggleColor, topDataRacks, topDistance, topThreeLeader, x3d, zoomIn;
+
+  HIGH_NUM = 9007199254740992;
+
+
+  /* Function rounds numbers to decimal certain decimal place */
+
+
+  /* Takes in a num and a round to point */
 
   Math.roundTo = function(num, amount) {
     if (amount == null) {
@@ -8,6 +18,9 @@
     }
     return Math.round(num * Math.pow(10, amount)) / Math.pow(10, amount);
   };
+
+
+  /* Adds a timestamp to console.log */
 
   console.logDate = function() {
     var timestamp;
@@ -17,9 +30,15 @@
     }
   };
 
+
+  /* Returns if a value is a number or not */
+
   isNumber = function(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
   };
+
+
+  /*                    ComponentID  Name  RackUnitHeight  RackWidth  RackDepth  RackOrientation   XPosition  yPosition  NumberingOrigin  OverlappingAllowed  CoolingMax  WeightMax  PowerMax  LargestUnitLocation  LargestUnitSize  UsedUnitsCurrent  UsedUnitsPlanned  WeightCurrent  WeightPlanned  HeatDissipationCurrent  HeatDissipationPlanned  PowerCurrent  PowerPlanned  PowerActual  PowerActualDerivation  FloorPlanWidth  FloorPlanHeight */
 
   RackInfoConstructor = function(componentID, name, rackUnitHeight, rackWidth, rackDepth, rackOrientation, xPosition, yPosition, numberingOrigin, overlappingAllowed, coolingMax, weightMax, powerMax, largestUnitLocation, largestUnitSize, usedUnitsCurrent, usedUnitsPlanned, weightCurrent, weightPlanned, heatDissipationCurrent, heatDissipationPlanned, powerCurrent, powerPlanned, powerActual, powerActualDerivation, floorPlanWidth, floorPlanHeight) {
     var obj;
@@ -43,8 +62,8 @@
     obj.usedUnitsPlanned = usedUnitsPlanned;
     obj.weightCurrent = weightCurrent;
     obj.weightPlanned = weightPlanned;
-    obj.temperatureCurrent = heatDissipationCurrent;
-    obj.temperaturePlanned = heatDissipationPlanned;
+    obj.temperatureCurrent = powerCurrent * 3.412141633;
+    obj.temperaturePlanned = powerPlanned * 3.412141633;
     obj.powerCurrent = powerCurrent;
     obj.powerPlanned = powerPlanned;
     obj.powerActual = powerActual;
@@ -54,7 +73,13 @@
     return obj;
   };
 
+
+  /* This variable will contail all information about the racks */
+
   data = [];
+
+
+  /* Manually out rackinformation into the data variable */
 
   data.push(new RackInfoConstructor(1470, "50M", 42, 483, 0, 0, 4250, 3650, 0, 1, 35000, 500, "NULL", 1, 41, 1, 0, 16, 0, 102, 0, "NULL", 0, 115, 1, 1500, 700));
 
@@ -142,9 +167,18 @@
 
   data.push(new RackInfoConstructor(1509, "53U", 42, 483, 0, 0, -4150, -2650, 0, 1, 35000, 500, 10000, 1, 32, 10, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1500, 700));
 
+
+  /* This will filter out racks that do not have the right properties */
+
+
+  /* Data must not be name Tile, must have a x, y position, a width, and a height */
+
   data = data.filter(function(d) {
     return d.name.indexOf("Tile") === -1 && isNumber(d.xPosition) && isNumber(d.yPosition) && isNumber(d.floorPlanWidth) && isNumber(d.floorPlanHeight);
   });
+
+
+  /* bounds is an object that contains all the information on the size and scale of the grid */
 
   bounds = {
     boundingBox: {
@@ -153,6 +187,8 @@
       minY: HIGH_NUM,
       maxY: -HIGH_NUM
     },
+
+    /* find the max value width and height of a rack to extend the grid and views */
     maxWidth: -HIGH_NUM,
     maxHeight: -HIGH_NUM,
     resetBounds: function() {
@@ -160,6 +196,10 @@
       this.boundingBox.maxX = this.boundingBox.maxY = -HIGH_NUM;
       this.maxWidth = this.maxHeight = -HIGH_NUM;
     },
+
+    /* recalculate the bounds based on the data */
+
+    /* was used if i want to change plans. Need to relook at the scale. */
     calculateBounds: function() {
       this.resetBounds();
       this.boundingBox.minX = Math.roundTo(d3.min(data, function(d) {
@@ -185,6 +225,9 @@
 
   bounds.calculateBounds();
 
+
+  /* These variables are used to declare starting positions of the views */
+
   frontDistance = bounds.boundingBox.minY - bounds.maxHeight - (bounds.boundingBox.maxX - bounds.boundingBox.minX);
 
   backDistance = -frontDistance;
@@ -193,7 +236,16 @@
 
   topDistance = (bounds.boundingBox.maxX - bounds.boundingBox.minY) + (bounds.boundingBox.maxY - bounds.boundingBox.minY);
 
+
+  /* Target the main x3d element */
+
   x3d = d3.select("#x3dElement").attr("height", "400px").attr("width", "700px");
+
+
+  /* Add in a couple buttons to the element */
+
+
+  /* Buttons do not work */
 
   zoomIn = x3d.append('button').attr('id', "zoom-in");
 
@@ -203,7 +255,16 @@
 
   document.getElementById('zoom-out').innerHTML = "Zoom Out";
 
+
+  /* There is one scene element per x3d element */
+
   scene = x3d.append("scene");
+
+
+  /* Append the different viewpoints */
+
+
+  /* All viewpoints have a centerOfRotation, position, orientation, and fieldOfView */
 
   scene.append("viewpoint").attr("id", "Top View").attr("centerOfRotation", "0 0 0").attr("position", "0 0 " + topDistance).attr("orientation", "0.0 0.0 0.0 0.0").attr("fieldOfView", '0.75');
 
@@ -217,15 +278,25 @@
 
   scene.append("viewpoint").attr("id", "Perspective").attr("centerOfRotation", "0 0 0").attr("position", "" + (backDistance / 3) + " " + (-sideDistance) + " " + (topDistance / 3)).attr("orientation", "1.0 0.25 0.25 1.25").attr("fieldOfView", '0.95');
 
-  scene.append("PointLight").attr("on", "TRUE").attr('intensity', '.50').attr('color', '1.0 1.0 1.0').attr('attenuation', '1.0000 0.0000 0.0000').attr('location', "" + sideDistance + " 0 0").attr('radius', '200.0');
 
-  scene.append("PointLight").attr("on", "TRUE").attr('intensity', '.50').attr('color', '1.0 1.0 1.0').attr('attenuation', '1.0000 0.0000 0.0000').attr('location', "" + (-sideDistance) + " 0 0").attr('radius', '200.0');
+  /* Right point Light */
 
-  HIGH_NUM = 9007199254740992;
+  scene.append("pointLight").attr("on", "TRUE").attr('intensity', '.50').attr('color', '1.0 1.0 1.0').attr('attenuation', '1.0000 0.0000 0.0000').attr('location', "" + sideDistance + " 0 0").attr('radius', '200.0');
+
+
+  /* Left point Light */
+
+  scene.append("pointLight").attr("on", "TRUE").attr('intensity', '.50').attr('color', '1.0 1.0 1.0').attr('attenuation', '1.0000 0.0000 0.0000').attr('location', "" + (-sideDistance) + " 0 0").attr('radius', '200.0');
+
+
+  /* Dummy function that is supposed to act as a tool tip */
 
   rackDataFunc = function(data) {
     console.log("justforshure");
   };
+
+
+  /* finds max number of a specific property within the data */
 
   findMaxNumber = function(data, property, limit) {
     if (limit == null) {
@@ -238,6 +309,9 @@
     });
   };
 
+
+  /* displays the top 3 leaders of one property */
+
   topThreeLeader = function(data, property, className, units) {
     var counter, dataSubset, max;
     max = [];
@@ -246,57 +320,100 @@
     max[2] = findMaxNumber(data, property, max[1]);
     counter = 0;
     while (counter < 3) {
+
+      /* filter out all data with a particular value */
       dataSubset = data.filter(function(d) {
         return d[property.toString()] === max[counter];
       });
+
+      /* change value to a string and add the units */
       max[counter] = max[counter].toString() + units.toString() + " rack" + (dataSubset.length > 1 ? "s:" : ":");
+
+      /* add the names of the rack to the string */
       dataSubset.forEach(function(d) {
         return max[counter] += " " + d.name;
       });
+
+      /* add the number of rack to the string */
       max[counter] += " (" + dataSubset.length + " total)";
       counter++;
     }
     counter = 1;
+
+    /* write the string into the innerHTML */
     while (counter < 4) {
       document.getElementsByClassName(className.toString() + counter.toString())[0].innerHTML = max[counter - 1];
       counter++;
     }
   };
 
+
+  /* find the top three leaders of all these properties */
+
   topDataRacks = function(data) {
-    topThreeLeader(data, "powerCurrent", "power", " ohms");
-    topThreeLeader(data, "temperatureCurrent", "temperature", "&#186;K");
+    topThreeLeader(data, "powerCurrent", "power", " watts");
+    topThreeLeader(data, "temperatureCurrent", "temperature", "BTUs");
     topThreeLeader(data, "weightCurrent", "weight", "lb");
     topThreeLeader(data, "usedUnitsCurrent", "used-units", " used units");
     topThreeLeader(data, "largestUnitLocation", "largest-unit-location", " units");
     topThreeLeader(data, "largestUnitSize", "largest-unit-size", " unit size");
   };
 
+
+  /* Remove all classes of a certain type */
+
   clearAllSelected = function(str) {
     var allSelected;
     allSelected = document.getElementsByClassName(str);
+
+    /* For every item in the list remove it from the class list */
     while (allSelected.length) {
       allSelected[0].className = allSelected[0].className.replace(str, '');
     }
   };
 
+
+  /* Main display function */
+
   display = function(data) {
+
+    /* for every piece of data */
     var shapesEnter, transforms;
     transforms = scene.selectAll('transform').data(data);
+
+    /* Append a transform and a shape to each transform */
+
+    /* they have a unique id and a class of rack */
+
+    /* id and class are not needed for css but was planning on using them for hover over */
     shapesEnter = transforms.enter().append('transform').append('shape').data(data).attr('id', function(d) {
       return 'rack' + d.componentID;
     }).attr('class', 'rack');
+
+    /* give each transform some transitions to move the boxes */
     transforms.transition().attr('translation', function(d, i) {
       return d.xPosition + ' ' + d.yPosition + ' 0.0';
     });
+
+    /* append a material to each shape with a material element within it */
     shapesEnter.append('appearance').append('material');
+
+    /* within the material set the color by calling the setRackColor function */
+
+    /* contains some transitions between colors */
     scene.selectAll('material').data(data).transition().duration(1000).delay(500).attr('diffuseColor', function(d) {
       return setRackColor(d);
     });
+
+    /* append a box to each shape and set the size of each box to the data of the rack */
     shapesEnter.append('box').data(data).attr('size', function(d) {
       return d.floorPlanWidth + ' ' + (d.floorPlanHeight - 0.1) + ' ' + d.rackUnitHeight;
     });
+
+    /* Not sure what this does here is more info https://github.com/mbostock/d3/wiki/Selections */
     transforms.exit();
+
+    /* update the leaders of each property */
     topDataRacks(data);
   };
 
@@ -305,6 +422,8 @@
   }), 10000);
 
   setRackColor = function(data) {
+
+    /* look at what color is selected */
     var g, r, value;
     switch (document.getElementsByClassName('selected-color')[0].value) {
       case "Power":
@@ -322,9 +441,15 @@
       default:
         value = "steelblue";
     }
+
+    /* if there is missing data assign color blue */
     if (value === "steelblue") {
       return "steelblue";
     }
+
+    /* change color based on max value and current value */
+
+    /* color will be on a scale of green to red */
     if (value < 0.5) {
       r = Math.floor(value * 255);
       g = 200;
@@ -335,52 +460,97 @@
     return "#" + (r < 16 ? "0" : "") + r.toString(16) + (g < 16 ? "0" : "") + g.toString(16) + "00";
   };
 
+
+  /* remove all .selected-view and asign it to a the called item */
+
   toggleCamera = function() {
     clearAllSelected('selected-view');
     this.className += " selected-view";
+
+    /* call the new view */
     document.getElementById(this.value).setAttribute('set_bind', 'true');
   };
+
+
+  /* remove all .selected-color and asign it to a the called item */
 
   toggleColor = function() {
     clearAllSelected('selected-color');
     this.className += " selected-color";
-    return display(data);
+
+    /* redisplay the color to show changed color */
+    display(data);
   };
 
   gridSetup = function(bounds) {
-    var coordinateString, gridHeightEnd, gridHeightStart, gridStart, gridWidthEnd, gridWidthStart, lineString, lineset, set, shape;
-    shape = scene.append('Transform').append('Shape').attr('id', 'grid');
-    shape.append('Appearance').append('Material').attr('id', 'gridMaterial').attr('diffuseColor', '0.8, 0.8, 0.8').attr('transparency', '0.65');
-    coordinateString = "";
-    lineString = "";
-    lineset = 0;
+
+    /* Attach a shape to the scene */
+
+    /* Give it a light grey color with transparency */
+    var connections, coordinateConnections, coordinates, gridHeightEnd, gridHeightStart, gridStart, gridWidthEnd, gridWidthStart, set, shape;
+    shape = scene.append('transform').append('shape').attr('id', 'grid');
+    shape.append('appearance').append('material').attr('id', 'gridMaterial').attr('diffuseColor', '0.8, 0.8, 0.8').attr('transparency', '0.65');
+
+    /* coordinateConnections is a string representing connections between coordinates */
+
+    /* all coordinates are connected until it reaches a -1 */
+
+    /* 1, 2, -1, 3, 4 will connect coordinate 1 and 2 but will not connect coordinate 2 and 3 */
+    coordinateConnections = "";
+
+    /* coordinates is a string representing the coordinates (x, y, z) */
+    coordinates = "";
+
+    /* connections signifies what set of line user is on */
+    connections = 0;
+
+    /* rounding to a .6 interval */
     gridHeightStart = Math.roundTo(Math.ceil((bounds.boundingBox.minY - bounds.maxHeight) / 0.6 - 1) * 0.6, 2);
     gridHeightEnd = Math.roundTo(Math.ceil((bounds.boundingBox.maxY + bounds.maxHeight) / 0.6 + 1) * 0.6, 2);
     gridWidthStart = Math.roundTo(Math.ceil((bounds.boundingBox.minX - bounds.maxWidth) / 0.6 - 1) * 0.6, 2);
     gridWidthEnd = Math.roundTo(Math.ceil((bounds.boundingBox.maxX + bounds.maxWidth) / 0.6 + 1) * 0.6, 2);
+
+    /* Verticle lines on the Grid */
     gridStart = gridWidthStart;
     while (gridStart <= gridWidthEnd) {
-      lineString += "" + gridStart + " " + gridHeightStart + " -1 " + gridStart + " " + gridHeightEnd + " -1 ";
-      coordinateString += "" + lineset + " " + (lineset + 1) + " -1 ";
+      coordinates += "" + gridStart + " " + gridHeightStart + " -1 " + gridStart + " " + gridHeightEnd + " -1 ";
+      coordinateConnections += "" + connections + " " + (connections + 1) + " -1 ";
       gridStart = Math.roundTo(gridStart + 0.6, 2);
-      lineset += 2;
+      connections += 2;
     }
+
+    /* Horizontal Lines on the Grid */
     gridStart = gridHeightStart;
     while (gridStart <= gridHeightEnd) {
-      lineString += "" + gridWidthStart + " " + gridStart + " -1 " + gridWidthEnd + " " + gridStart + " -1 ";
-      coordinateString += "" + lineset + " " + (lineset + 1) + " -1 ";
+      coordinates += "" + gridWidthStart + " " + gridStart + " -1 " + gridWidthEnd + " " + gridStart + " -1 ";
+      coordinateConnections += "" + connections + " " + (connections + 1) + " -1 ";
       gridStart = Math.roundTo(gridStart + 0.6, 2);
-      lineset += 2;
+      connections += 2;
     }
-    set = shape.append('IndexedLineSet').attr('coordIndex', '#{coordinateString}');
-    return set.append('Coordinate').attr('point', "" + lineString);
+
+    /* set the final strings to the proper place */
+    set = shape.append('indexedLineSet').attr('coordIndex', '#{coordinateConnections}');
+    return set.append('coordinate').attr('point', "" + coordinates);
   };
+
+
+  /* setup the grid */
 
   gridSetup(bounds);
 
+
+  /* shuffle between different views */
+
+
+  /* there is a bug in the code */
+
   shuffleView = function() {
+
+    /* what view are you currently on in terms of number */
     var initialNumber, newView, selectedNumber;
     initialNumber = document.getElementsByClassName('selected-view')[0].className.replace('button', '').replace('selected-view', '').replace('view', '').replace(/\s/, '');
+
+    /* Look for the next view based on the initial number position */
     if (parseInt(initialNumber) < document.getElementsByClassName('camera-option')[0].children.length - 1) {
       selectedNumber = parseInt(initialNumber) + 1;
     } else {
@@ -388,12 +558,18 @@
     }
     newView = document.getElementsByClassName("" + ('view' + selectedNumber.toString()))[0];
     clearAllSelected('selected-view');
+
+    /* give the new view the correct class name for the css */
     newView.className += " selected-view";
+
+    /* call the new view so it will change the view of the 3D model */
     document.getElementById(newView.value).setAttribute('set_bind', 'true');
     display(data);
   };
 
   window.onload = function() {
+
+    /* options setup. Initializes the button to proper function */
     var cameraButton, colorButton, _i, _j, _len, _len1, _ref, _ref1;
     _ref = document.getElementsByClassName('color-option')[0].children;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -405,7 +581,13 @@
       cameraButton = _ref1[_j];
       cameraButton.onmouseover = toggleCamera;
     }
+
+    /* this will turn off movement controls */
+
+    /* document.getElementById('x3dElement').runtime.noNav() */
     display(data);
+
+    /* this will toggle the grid transpareaancy */
     document.getElementById('grid-toggle').onclick = function() {
       if (document.getElementById('gridMaterial').transparency === "1.0") {
         document.getElementById('gridMaterial').transparency = ".65";
@@ -413,6 +595,8 @@
         document.getElementById('gridMaterial').transparency = "1.0";
       }
     };
+
+    /* if shuffle is clicked it will call shuffleView every 10sec */
     document.getElementById('view-shuffle').onclick = function() {
       var shuffleID;
       if (document.getElementById('view-shuffle').checked === true) {

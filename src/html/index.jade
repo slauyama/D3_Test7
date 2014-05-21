@@ -13,17 +13,20 @@ html
 		- var iterator = 0
 		div.rack-view-options.fltLeft
 			h2 Camera Options:
+			// div.camera-option contains all the different views you can toggle through.
 			div.buttons.camera-option
 				each view, index in["Top View", "Front View", "Left View", "Right View", "Back View", "Perspective"]
 					- var className = !index ? ' selected-view' : ''
 					input.button(type="button", class="view"+index, class=className,  value=view)
 			
 			h2 Color Options:
+			// div.color-option contains all the different colors you can shuffe through.
 			div.buttons.color-option
 				each color, index in ["Power", "Weight", "Temperature"]
 					- var className = !index ? ' selected-color' : ''
 					input.button(type="button" class=className value=color)
-			
+			// div.formGroup contains two controls. Displaying a grid and shuffling through views
+			//  Shuffling through views has a bug
 			div.formGroup
 				label(for="grid-toggle") Display Grid:
 				input#grid-toggle.checkbox(type="checkbox" checked=true)
@@ -31,7 +34,10 @@ html
 				input#view-shuffle.checkbox(type="checkbox" checked=false)
 
 		div.fltClear
+		// x3d#x3dElement will contains all 3D elements
 		x3d#x3dElement.fltLeft
+		// #rack-data is designed so that a hover of a rack will bring up the necessary data.
+		// This does not work
 		div#rack-data
 			h2 Rack Information:
 			ul.alignRight.fltLeft
@@ -53,6 +59,7 @@ html
 
 		div#leader-data.fltLeft.fltClear
 			h2 Rack Leaders:
+			// ul#leader-list will show the top 3 leaders of a certain category.
 			ul#leader-list
 				each descriptor, index in ["Power", "Temperature", "Weight", "Used Units","Largest Unit Location", "Largest Unit Size"]
 					ol(id="#{descriptor.replace(' ','-').toLowerCase()}-leader" class="leader")
@@ -60,6 +67,7 @@ html
 						each index in [1,2,3]
 							li(class="leader-item #{descriptor.replace(/\s/g,'-').toLowerCase()+index}") N/A
 					if index === 2
+						// Added an additional div to have 3 lists on top and 3 lists on bottom
 						div.fltClear
-
+		// link to all of the scripts I have written.
 		script(src="js/main.js")

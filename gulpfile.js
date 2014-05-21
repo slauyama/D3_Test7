@@ -35,7 +35,7 @@ gulp.task('default', function() {
     gulp.start('sass', 'coffee', 'jade', 'watch');
 });
 
-//CSS
+//CSS - will compile and minify scss
 gulp.task('sass', function() {
 	return gulp.src('src/css/main.scss')
 		.pipe(plumber())
@@ -47,7 +47,7 @@ gulp.task('sass', function() {
 	    .pipe(notify({ message: 'Sass task complete' }));
 });
 
-// Scripts
+// Scripts - will compile, concat, and minify scripts
 gulp.task('coffee', function() {
   	return gulp.src(['src/js/lib.coffee', jsSrc])
 		.pipe(concat('main.js'))
@@ -62,7 +62,18 @@ gulp.task('coffee', function() {
     	.pipe(notify({ message: 'Coffee task complete' }));
 });
 
-// HTML
+// Compile individual
+gulp.task('compile', function() {
+  	return gulp.src(['src/js/lib.coffee', jsSrc])
+		.pipe(plumber())
+		.pipe(coffee())
+		.pipe(jshint())
+		.pipe(jshint.reporter('default'))
+    	.pipe(gulp.dest('js/'))
+    	.pipe(notify({ message: 'Compile task complete' }));
+});
+
+// HTML - will call jade pretty and jade uglify
 gulp.task('jade', function() {
 	gulp.start('jadePretty', 'jadeUgly');
   	
@@ -86,7 +97,7 @@ gulp.task('jadeUgly', function() {
     	.pipe(notify({ message: 'Jade Ugly complete' }));
 });
 
-// Clean
+// Clean - Removes all scripts inside folder
 gulp.task('clean', function() {
   	return gulp.src(['css', 'js'], {read: false})
     	.pipe(clean()
@@ -94,7 +105,7 @@ gulp.task('clean', function() {
     		.on('error', gutil.beep));
 });
 
-// Watch .js, .scss, and .jade files
+// Watch - watch .js, .scss, and .jade files
 gulp.task('watch', function() {
 	gulp.watch(cssSrc, ['sass']);
 	gulp.watch(jsSrc, ['coffee']);
