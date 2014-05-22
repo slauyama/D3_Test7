@@ -2,7 +2,7 @@
   "use strict";
 
   /* Largest Numbber in javascript */
-  var HIGH_NUM, RackInfoConstructor, backDistance, bounds, clearAllSelected, data, display, findMaxNumber, frontDistance, gridSetup, isNumber, rackDataFunc, scene, setRackColor, shuffleView, sideDistance, toggleCamera, toggleColor, topDataRacks, topDistance, topThreeLeader, x3d, zoomIn;
+  var HIGH_NUM, RackInfoConstructor, backDistance, bb, bounds, clearAllSelected, data, display, findMaxNumber, frontDistance, gridSetup, isNumber, rackDataFunc, scene, setRackColor, shuffleView, sideDistance, toggleCamera, toggleColor, topDataRacks, topDistance, topThreeLeader, x3d, zoomIn;
 
   HIGH_NUM = 9007199254740992;
 
@@ -178,7 +178,7 @@
   });
 
 
-  /* bounds is an object that contains all the information on the size and scale of the grid */
+  /* bounds - object that contains info on the size and scale of the grid */
 
   bounds = {
     boundingBox: {
@@ -188,7 +188,7 @@
       maxY: -HIGH_NUM
     },
 
-    /* find the max value width and height of a rack to extend the grid and views */
+    /* find the max width and height of a rack to extend the grid and views */
     maxWidth: -HIGH_NUM,
     maxHeight: -HIGH_NUM,
     resetBounds: function() {
@@ -228,13 +228,15 @@
 
   /* These variables are used to declare starting positions of the views */
 
-  frontDistance = bounds.boundingBox.minY - bounds.maxHeight - (bounds.boundingBox.maxX - bounds.boundingBox.minX);
+  bb = bounds.boundingBox;
+
+  frontDistance = bb.minY - bounds.maxHeight - (bb.maxX - bb.minX);
 
   backDistance = -frontDistance;
 
-  sideDistance = bounds.boundingBox.maxX + bounds.maxWidth + (bounds.boundingBox.maxY - bounds.boundingBox.minY);
+  sideDistance = bb.maxX + bounds.maxWidth + (bb.maxY - bb.minY);
 
-  topDistance = (bounds.boundingBox.maxX - bounds.boundingBox.minY) + (bounds.boundingBox.maxY - bounds.boundingBox.minY);
+  topDistance = (bb.maxX - bb.minY) + (bb.maxY - bb.minY);
 
 
   /* Target the main x3d element */
@@ -264,7 +266,10 @@
   /* Append the different viewpoints */
 
 
-  /* All viewpoints have a centerOfRotation, position, orientation, and fieldOfView */
+  /* All viewpoints have a centerOfRotation, position, orientation, */
+
+
+  /* and fieldOfView */
 
   scene.append("viewpoint").attr("id", "Top View").attr("centerOfRotation", "0 0 0").attr("position", "0 0 " + topDistance).attr("orientation", "0.0 0.0 0.0 0.0").attr("fieldOfView", '0.75');
 
@@ -274,26 +279,32 @@
 
   scene.append("viewpoint").attr("id", "Right View").attr("centerOfRotation", "0 0 0").attr("position", "" + sideDistance + " 0 0.25").attr("orientation", "0.50 0.50 0.50 2.093").attr("fieldOfView", '0.95');
 
-  scene.append("viewpoint").attr("id", "Back View").attr("centerOfRotation", "0 0 0").attr("position", "0.0 " + backDistance + " -.50").attr("orientation", "0.0 0.75 0.65 3.14").attr("fieldOfView", '0.95');
+  scene.append("viewpoint").attr("id", "Back View").attr("centerOfRotation", "0 0 0").attr("position", "0 " + backDistance + " -.5").attr("orientation", "0.0 0.75 0.65 3.14").attr("fieldOfView", '0.95');
 
   scene.append("viewpoint").attr("id", "Perspective").attr("centerOfRotation", "0 0 0").attr("position", "" + (backDistance / 3) + " " + (-sideDistance) + " " + (topDistance / 3)).attr("orientation", "1.0 0.25 0.25 1.25").attr("fieldOfView", '0.95');
 
 
+  /* Custom View Removed
+  scene.append("viewpoint").attr("id", "Custom View")
+    .attr( "centerOfRotation", "0 0 0")
+    .attr( "position", "#{-backDistance / 3} #{-sideDis} #{topDistance / 3}"  )
+    .attr( "orientation", "1.0 -0.2 -0.1 1.25" ).attr( "fieldOfView", '0.75')
+   */
+
+
   /* Right point Light */
 
-  scene.append("pointLight").attr("on", "TRUE").attr('intensity', '.50').attr('color', '1.0 1.0 1.0').attr('attenuation', '1.0000 0.0000 0.0000').attr('location', "" + sideDistance + " 0 0").attr('radius', '200.0');
+  scene.append("pointLight").attr("on", "true").attr('intensity', '.50').attr('color', '1.0 1.0 1.0').attr('attenuation', '1.0000 0.0000 0.0000').attr('location', "" + sideDistance + " 0 0").attr('radius', '200.0');
 
 
   /* Left point Light */
 
-  scene.append("pointLight").attr("on", "TRUE").attr('intensity', '.50').attr('color', '1.0 1.0 1.0').attr('attenuation', '1.0000 0.0000 0.0000').attr('location', "" + (-sideDistance) + " 0 0").attr('radius', '200.0');
+  scene.append("pointLight").attr("on", "true").attr('intensity', '.50').attr('color', '1.0 1.0 1.0').attr('attenuation', '1.0000 0.0000 0.0000').attr('location', "" + (-sideDistance) + " 0 0").attr('radius', '200.0');
 
 
   /* Dummy function that is supposed to act as a tool tip */
 
-  rackDataFunc = function(data) {
-    console.log("justforshure");
-  };
+  rackDataFunc = function(data) {};
 
 
   /* finds max number of a specific property within the data */
@@ -303,8 +314,8 @@
       limit = HIGH_NUM;
     }
     return d3.max(data, function(d) {
-      if (typeof d[property.toString()] === "number" && d[property.toString()] < limit) {
-        return d[property.toString()];
+      if (typeof d[property] === "number" && d[property] < limit) {
+        return d[property];
       }
     });
   };
@@ -315,9 +326,9 @@
   topThreeLeader = function(data, property, className, units) {
     var counter, dataSubset, max;
     max = [];
-    max[0] = findMaxNumber(data, property);
-    max[1] = findMaxNumber(data, property, max[0]);
-    max[2] = findMaxNumber(data, property, max[1]);
+    max[0] = findMaxNumber(data, property.toString());
+    max[1] = findMaxNumber(data, property.toString(), max[0]);
+    max[2] = findMaxNumber(data, property.toString(), max[1]);
     counter = 0;
     while (counter < 3) {
 
@@ -342,7 +353,7 @@
 
     /* write the string into the innerHTML */
     while (counter < 4) {
-      document.getElementsByClassName(className.toString() + counter.toString())[0].innerHTML = max[counter - 1];
+      document.getElementsByClassName(className.toString(), +counter.toString())[0].innerHTML = max[counter - 1];
       counter++;
     }
   };
@@ -392,6 +403,7 @@
 
     /* give each transform some transitions to move the boxes */
     transforms.transition().attr('translation', function(d, i) {
+      console.log(d.xPosition, d.yPosition);
       return d.xPosition + ' ' + d.yPosition + ' 0.0';
     });
 
@@ -488,7 +500,7 @@
 
     /* Give it a light grey color with transparency */
     var connections, coordinateConnections, coordinates, gridHeightEnd, gridHeightStart, gridStart, gridWidthEnd, gridWidthStart, set, shape;
-    shape = scene.append('transform').append('shape').attr('id', 'grid');
+    shape = scene.append('Transform').append('shape').attr('id', 'grid');
     shape.append('appearance').append('material').attr('id', 'gridMaterial').attr('diffuseColor', '0.8, 0.8, 0.8').attr('transparency', '0.65');
 
     /* coordinateConnections is a string representing connections between coordinates */
@@ -509,6 +521,7 @@
     gridHeightEnd = Math.roundTo(Math.ceil((bounds.boundingBox.maxY + bounds.maxHeight) / 0.6 + 1) * 0.6, 2);
     gridWidthStart = Math.roundTo(Math.ceil((bounds.boundingBox.minX - bounds.maxWidth) / 0.6 - 1) * 0.6, 2);
     gridWidthEnd = Math.roundTo(Math.ceil((bounds.boundingBox.maxX + bounds.maxWidth) / 0.6 + 1) * 0.6, 2);
+    console.log(gridHeightStart, gridHeightEnd, gridWidthStart, gridWidthEnd);
 
     /* Verticle lines on the Grid */
     gridStart = gridWidthStart;

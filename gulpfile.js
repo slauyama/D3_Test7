@@ -3,6 +3,7 @@ var gulp = require('gulp');
 
 var clean = require('gulp-clean'),
 	coffee = require('gulp-coffee'),
+	coffeelint = require('gulp-coffeelint'),
 	concat = require('gulp-concat'),
 	concatcss = require('gulp-concat-css'),
 	gutil = require('gulp-util'),
@@ -50,6 +51,8 @@ gulp.task('sass', function() {
 // Scripts - will compile, concat, and minify scripts
 gulp.task('coffee', function() {
   	return gulp.src(['src/js/lib.coffee', jsSrc])
+		.pipe(coffeelint())
+        .pipe(coffeelint.reporter())
 		.pipe(concat('main.js'))
 		.pipe(plumber())
 		.pipe(coffee())
