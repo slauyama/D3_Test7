@@ -136,8 +136,7 @@ topThreeLeader = (data, property, className, units) ->
   counter = 1
   ### write the string into the innerHTML ###
   while counter < 4
-    document.getElementsByClassName(className.toString()
-      +counter.toString() )[0].innerHTML = max[counter - 1]
+    document.getElementsByClassName(className.toString()+counter.toString() )[0].innerHTML = max[counter - 1]
     counter++
     
   return
