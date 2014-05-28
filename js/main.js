@@ -4,7 +4,7 @@
   /* Function rounds numbers to decimal certain decimal place */
 
   /* Takes in a num and a round to point */
-  var RackInfo, bounds, clearAllSelected, data, display, findMaxNumbers, getRackColor, getTopLists, getTopThreeValues, gridSetup, isNumber, rackDataFunc, shuffleView, toggleCamera, toggleColor, x3d, x3dWrapper;
+  var RackInfo, bounds, clearAllSelected, data, findMaxNumbers, getRackColor, getTopLists, getTopThreeValues, isNumber, rackDataFunc, shuffleView, toggleCamera, toggleColor, x3d, x3dWrapper;
 
   Math.roundTo = function(num, amount) {
     if (amount == null) {
@@ -251,7 +251,7 @@
 
     /* Returns the back distance needed for view */
     getTopDistance: function() {
-      return this.boundingBox.minY - this.maxHeight - (this.boundingBox.maxY - this.boundingBox.minX);
+      return this.boundingBox.maxX - this.boundingBox.minY + this.boundingBox.maxY - this.boundingBox.minY;
     }
   };
 
@@ -276,6 +276,105 @@
     /* Color - input is a 0 to 1 value for r, g, and b */
     createPointlight: function(intensity, color, attenuation, location, radius) {
       this.scene.append("pointLight").attr('intensity', intensity).attr('color', color).attr('attenuation', attenuation).attr('location', location).attr('radius', radius);
+    },
+
+    /* Main display function */
+    display: function(data) {
+
+      /* for every piece of data */
+      var shapesEnter, transforms;
+      transforms = this.scene.selectAll('transform').data(data);
+
+      /* Append a transform and a shape to each transform */
+
+      /* they have a unique id and a class of rack */
+
+      /* id and class are not needed yet. Plan to use them for hover over */
+      shapesEnter = transforms.enter().append('transform').append('shape').data(data).attr('id', function(data) {
+        return 'rack' + data.componentId;
+      }).attr('class', 'rack');
+
+      /* give each transform some transitions to move the boxes */
+      transforms.transition().attr('translation', function(data) {
+        return data.adjustedXPosition + ' ' + data.adjustedYPosition + ' 0.0';
+      });
+
+      /* append a material to each shape with a material element within it */
+      shapesEnter.append('appearance').append('material');
+
+      /* in the material set the color by calling the getRackColor function */
+
+      /* contains some transitions between colors */
+      this.scene.selectAll('material').data(data).transition().duration(1000).delay(500).attr('diffuseColor', function(data) {
+        return getRackColor(data);
+      });
+
+      /* append a box to each shape */
+
+      /* set the size of each box to the data of the rack */
+      shapesEnter.append('box').data(data).attr('size', function(data) {
+        return data.floorPlanWidth + ' ' + (data.floorPlanHeight - 0.1) + ' ' + data.height;
+      });
+
+      /* Not sure what this does here is more info
+      https://github.com/mbostock/d3/wiki/Selections
+       */
+      transforms.exit();
+
+      /* update the leaders of each property */
+      getTopLists(data);
+    },
+    setupGrid: function(bounds) {
+
+      /* Attach a shape to the scene */
+
+      /* Give it a light grey color with transparency */
+      var connections, coordinateConnections, coordinates, gridHeightEnd, gridHeightStart, gridStart, gridWidthEnd, gridWidthStart, set, shape;
+      shape = this.scene.append('Transform').append('shape').attr('id', 'grid');
+      shape.append('appearance').append('material').attr('id', 'gridMaterial').attr('diffuseColor', '0.8, 0.8, 0.8').attr('transparency', '0.65');
+
+      /* coordinateConnections: string representing connection of coordinates
+        all coordinates are connected until it reaches a -1
+        1, 2, -1, 3, 4 will connect coordinate 1 and 2
+        but will not connect coordinate 2 and 3
+       */
+      coordinateConnections = "";
+
+      /* coordinates is a string representing the coordinates (x, y, z) */
+      coordinates = "";
+
+      /* connections signifies what set of line user is on */
+      connections = 0;
+
+      /* rounding to a .6 because that is the standard grid interval */
+      gridHeightStart = Math.roundTo(Math.ceil((bounds.boundingBox.minY - bounds.maxHeight) / 0.6 - 1) * 0.6, 2);
+      gridHeightEnd = Math.roundTo(Math.ceil((bounds.boundingBox.maxY + bounds.maxHeight) / 0.6 + 1) * 0.6, 2);
+      gridWidthStart = Math.roundTo(Math.ceil((bounds.boundingBox.minX - bounds.maxWidth) / 0.6 - 1) * 0.6, 2);
+      gridWidthEnd = Math.roundTo(Math.ceil((bounds.boundingBox.maxX + bounds.maxWidth) / 0.6 + 1) * 0.6, 2);
+
+      /* Verticle lines on the Grid */
+      gridStart = gridWidthStart;
+      while (gridStart <= gridWidthEnd) {
+        coordinates += "" + gridStart + " " + gridHeightStart + " -1 ";
+        coordinates += "" + gridStart + " " + gridHeightEnd + " -1 ";
+        coordinateConnections += "" + connections + " " + (connections + 1) + " -1 ";
+        gridStart = Math.roundTo(gridStart + 0.6, 2);
+        connections += 2;
+      }
+
+      /* Horizontal Lines on the Grid */
+      gridStart = gridHeightStart;
+      while (gridStart <= gridHeightEnd) {
+        coordinates += "" + gridWidthStart + " " + gridStart + " -1 ";
+        coordinates += "" + gridWidthEnd + " " + gridStart + " -1 ";
+        coordinateConnections += "" + connections + " " + (connections + 1) + " -1 ";
+        gridStart = Math.roundTo(gridStart + 0.6, 2);
+        connections += 2;
+      }
+
+      /* set the final strings to the proper place */
+      set = shape.append('indexedLineSet').attr('coordIndex', '#{coordinateConnections}');
+      return set.append('coordinate').attr('point', "" + coordinates);
     }
   };
 
@@ -284,9 +383,9 @@
 
   x3dWrapper.createViewpoint("Top View", "0 0 0", "0 0 " + (bounds.getTopDistance()), "0.0 0.0 0.0 0.0", '0.75');
 
-  x3dWrapper.createViewpoint("Front View", "0 0 0", "0 0 " + (bounds.getFrontDistance()), "1.0 0.0 0.0 1.570", '0.95');
+  x3dWrapper.createViewpoint("Front View", "0 0 0", "0 " + (bounds.getFrontDistance()) + " 0", "1.0 0.0 0.0 1.570", '0.95');
 
-  x3dWrapper.createViewpoint("Left View", "0 0 0", "" + (-1 * bounds.getSideDistance()) + " 0 0.25", "-0.50 0.50 0.50 " + (2.093 * 2), '0.95');
+  x3dWrapper.createViewpoint("Left View", "0 0 0", "" + (-1 * bounds.getSideDistance()) + " 0 4.0", "-0.50 0.50 0.50 " + (2.093 * 2), '0.75');
 
   x3dWrapper.createViewpoint("Right View", "0 0 0", "" + (bounds.getSideDistance()) + " 0 0.25", "0.50 0.50 0.50 2.093", '0.95');
 
@@ -339,7 +438,7 @@
   /* displays the top 3 leaders of one property */
 
   getTopThreeValues = function(data, property, className, units) {
-    var counter, dataSubset, maxValueList, selectClass, stringValues;
+    var counter, dataSubset, maxValueList, stringValues, target;
     console.log(property);
     maxValueList = findMaxNumbers(data, property, 3);
     stringValues = [];
@@ -367,8 +466,8 @@
 
     /* write the string into the innerHTML */
     while (counter < maxValueList.length) {
-      selectClass = className + (counter + 1);
-      document.getElementsByClassName(selectClass)[0].innerHTML = stringValues[counter];
+      target = className + (counter + 1);
+      document.getElementsByClassName(target)[0].innerHTML = stringValues[counter];
       counter++;
     }
   };
@@ -406,60 +505,10 @@
   };
 
 
-  /* Main display function */
-
-  display = function(data) {
-
-    /* for every piece of data */
-    var shapesEnter, transforms;
-    transforms = scene.selectAll('transform').data(data);
-
-    /* Append a transform and a shape to each transform */
-
-    /* they have a unique id and a class of rack */
-
-    /* id and class are not needed yet. Plan to use them for hover over */
-    shapesEnter = transforms.enter().append('transform').append('shape').data(data).attr('id', function(d) {
-      return 'rack' + d.componentId;
-    }).attr('class', 'rack');
-
-    /* give each transform some transitions to move the boxes */
-    transforms.transition().attr('translation', function(d, i) {
-      console.log(d.adjustedXPosition, d.adjustedYPosition);
-      return d.adjustedXPosition + ' ' + d.adjustedYPosition + ' 0.0';
-    });
-
-    /* append a material to each shape with a material element within it */
-    shapesEnter.append('appearance').append('material');
-
-    /* within the material set the color by calling the getRackColor function */
-
-    /* contains some transitions between colors */
-    scene.selectAll('material').data(data).transition().duration(1000).delay(500).attr('diffuseColor', function(d) {
-      return getRackColor(d);
-    });
-
-    /* append a box to each shape */
-
-    /* set the size of each box to the data of the rack */
-    shapesEnter.append('box').data(data).attr('size', function(data) {
-      return data.floorPlanWidth + ' ' + (data.floorPlanHeight - 0.1) + ' ' + data.height;
-    });
-
-    /* Not sure what this does here is more info
-    https://github.com/mbostock/d3/wiki/Selections
-     */
-    transforms.exit();
-
-    /* update the leaders of each property */
-    getTopLists(data);
-  };
-
-
   /* this runs on a set interval just in case the data changes */
 
   setInterval((function() {
-    return display(data);
+    return x3dWrapper.display(data);
   }), 10000);
 
   getRackColor = function(data) {
@@ -504,12 +553,13 @@
     /* Convert the red and green decimal values into a hex value */
 
     /* no ternary in coffeescript */
-    redString = (red < 16 ? "0" : "") + r.toString(16);
-    greenString = (green < 16 ? "0" : "") + g.toString(16);
+    redString = (red < 16 ? "0" : "") + red.toString(16);
+    greenString = (green < 16 ? "0" : "") + green.toString(16);
     color = "#" + redString + greenString + "00";
     if (badDataFlag) {
-      return color = "steelblue";
+      color = "steelblue";
     }
+    return color;
   };
 
 
@@ -531,66 +581,13 @@
     this.className += " selected-color";
 
     /* redisplay the color to show changed color */
-    display(data);
-  };
-
-  gridSetup = function(bounds) {
-
-    /* Attach a shape to the scene */
-
-    /* Give it a light grey color with transparency */
-    var connections, coordinateConnections, coordinates, gridHeightEnd, gridHeightStart, gridStart, gridWidthEnd, gridWidthStart, set, shape;
-    shape = scene.append('Transform').append('shape').attr('id', 'grid');
-    shape.append('appearance').append('material').attr('id', 'gridMaterial').attr('diffuseColor', '0.8, 0.8, 0.8').attr('transparency', '0.65');
-
-    /* coordinateConnections: string representing connection of coordinates
-      all coordinates are connected until it reaches a -1
-      1, 2, -1, 3, 4 will connect coordinate 1 and 2
-      but will not connect coordinate 2 and 3
-     */
-    coordinateConnections = "";
-
-    /* coordinates is a string representing the coordinates (x, y, z) */
-    coordinates = "";
-
-    /* connections signifies what set of line user is on */
-    connections = 0;
-
-    /* rounding to a .6 because that is the standard grid interval */
-    gridHeightStart = Math.roundTo(Math.ceil((bounds.boundingBox.minY - bounds.maxHeight) / 0.6 - 1) * 0.6, 2);
-    gridHeightEnd = Math.roundTo(Math.ceil((bounds.boundingBox.maxY + bounds.maxHeight) / 0.6 + 1) * 0.6, 2);
-    gridWidthStart = Math.roundTo(Math.ceil((bounds.boundingBox.minX - bounds.maxWidth) / 0.6 - 1) * 0.6, 2);
-    gridWidthEnd = Math.roundTo(Math.ceil((bounds.boundingBox.maxX + bounds.maxWidth) / 0.6 + 1) * 0.6, 2);
-
-    /* Verticle lines on the Grid */
-    gridStart = gridWidthStart;
-    while (gridStart <= gridWidthEnd) {
-      coordinates += "" + gridStart + " " + gridHeightStart + " -1 ";
-      coordinates += "" + gridStart + " " + gridHeightEnd + " -1 ";
-      coordinateConnections += "" + connections + " " + (connections + 1) + " -1 ";
-      gridStart = Math.roundTo(gridStart + 0.6, 2);
-      connections += 2;
-    }
-
-    /* Horizontal Lines on the Grid */
-    gridStart = gridHeightStart;
-    while (gridStart <= gridHeightEnd) {
-      coordinates += "" + gridWidthStart + " " + gridStart + " -1 ";
-      coordinates += "" + gridWidthEnd + " " + gridStart + " -1 ";
-      coordinateConnections += "" + connections + " " + (connections + 1) + " -1 ";
-      gridStart = Math.roundTo(gridStart + 0.6, 2);
-      connections += 2;
-    }
-
-    /* set the final strings to the proper place */
-    set = shape.append('indexedLineSet').attr('coordIndex', '#{coordinateConnections}');
-    return set.append('coordinate').attr('point', "" + coordinates);
+    x3dWrapper.display(data);
   };
 
 
   /* setup the grid */
 
-  gridSetup(bounds);
+  x3dWrapper.setupGrid(bounds);
 
 
   /* shuffle between different views */
@@ -610,7 +607,7 @@
     } else {
       selectedNumber = 0;
     }
-    newView = document.getElementsByClassName("" + ('view' + selectedNumber.toString()))[0];
+    newView = document.getElementsByClassName("" + ('view' + selectedNumber))[0];
     clearAllSelected('selected-view');
 
     /* give the new view the correct class name for the css */
@@ -618,7 +615,7 @@
 
     /* call the new view so it will change the view of the 3D model */
     document.getElementById(newView.value).setAttribute('set_bind', 'true');
-    display(data);
+    x3dWrapper.display(data);
   };
 
   window.onload = function() {
@@ -639,7 +636,7 @@
     /* this will turn off movement controls */
 
     /* document.getElementById('x3dElement').runtime.noNav() */
-    display(data);
+    x3dWrapper.display(data);
 
     /* this will toggle the grid transpareaancy */
     document.getElementById('grid-toggle').onclick = function() {
@@ -653,7 +650,7 @@
     /* if shuffle is clicked it will call shuffleView every 10sec */
     document.getElementById('view-shuffle').onclick = function() {
 
-      /* shuffleId is declared outside the scope of the if 
+      /* shuffleId is declared outside the scope of the if
           coffeescript automatically declares variables at the next level
        */
       var shuffleId;

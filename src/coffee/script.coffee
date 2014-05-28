@@ -47,7 +47,7 @@ bounds =
 
   ### Returns the back distance needed for view ###
   getTopDistance: ->
-    @boundingBox.minY - @maxHeight - (@boundingBox.maxY - @boundingBox.minX)
+    @boundingBox.maxX - @boundingBox.minY + @boundingBox.maxY - @boundingBox.minY
 
 bounds.setBounds()
 
@@ -75,14 +75,106 @@ x3dWrapper =
     .attr('location', location).attr('radius', radius)
     return
 
+  ### Main display function ###
+  display: ( data ) ->
+    ### for every piece of data  ###
+    transforms = @scene.selectAll('transform').data(data)
+
+    ### Append a transform and a shape to each transform ###
+    ### they have a unique id and a class of rack ###
+    ### id and class are not needed yet. Plan to use them for hover over ###
+    shapesEnter = transforms.enter().append('transform')
+      .append('shape').data(data)
+        .attr('id', (data)-> 'rack' + data.componentId)
+        .attr('class', 'rack')
+
+    ### give each transform some transitions to move the boxes ###
+    transforms.transition().attr('translation', (data) ->
+      data.adjustedXPosition + ' ' + data.adjustedYPosition + ' 0.0'
+    )
+
+    ### append a material to each shape with a material element within it ###
+    shapesEnter.append('appearance').append('material')
+
+    ### in the material set the color by calling the getRackColor function ###
+    ### contains some transitions between colors ###
+    @scene.selectAll('material').data(data).transition()
+      .duration(1000).delay(500)
+      .attr('diffuseColor', (data)-> getRackColor(data))
+
+    ### append a box to each shape ###
+    ### set the size of each box to the data of the rack ###
+    shapesEnter.append('box').data(data)
+      .attr('size', (data) -> data.floorPlanWidth + ' ' +
+        (data.floorPlanHeight - 0.1) + ' ' + data.height)
+
+    ### Not sure what this does here is more info
+    https://github.com/mbostock/d3/wiki/Selections ###
+    transforms.exit()
+
+    ### update the leaders of each property ###
+    getTopLists(data)
+
+    return
+
+  setupGrid: (bounds)->
+    ### Attach a shape to the scene ###
+    ### Give it a light grey color with transparency ###
+    shape = @scene.append('Transform').append('shape').attr('id', 'grid')
+    shape.append('appearance').append('material')
+      .attr('id', 'gridMaterial').attr('diffuseColor', '0.8, 0.8, 0.8')
+      .attr('transparency','0.65')
+    ### coordinateConnections: string representing connection of coordinates
+      all coordinates are connected until it reaches a -1
+      1, 2, -1, 3, 4 will connect coordinate 1 and 2
+      but will not connect coordinate 2 and 3
+    ###
+    coordinateConnections = ""
+    ### coordinates is a string representing the coordinates (x, y, z) ###
+    coordinates = ""
+    ### connections signifies what set of line user is on ###
+    connections = 0
+
+    ### rounding to a .6 because that is the standard grid interval ###
+    gridHeightStart = Math.roundTo(
+      Math.ceil((bounds.boundingBox.minY - bounds.maxHeight) / 0.6 - 1) * 0.6, 2)
+    gridHeightEnd = Math.roundTo(
+      Math.ceil((bounds.boundingBox.maxY + bounds.maxHeight) / 0.6 + 1) * 0.6, 2)
+    gridWidthStart = Math.roundTo(
+      Math.ceil((bounds.boundingBox.minX - bounds.maxWidth) / 0.6 - 1) * 0.6, 2)
+    gridWidthEnd = Math.roundTo(
+      Math.ceil((bounds.boundingBox.maxX + bounds.maxWidth) / 0.6 + 1) * 0.6, 2)
+    ### Verticle lines on the Grid ###
+    gridStart = gridWidthStart
+    while gridStart <= gridWidthEnd
+      coordinates += "#{gridStart} #{gridHeightStart} -1 "
+      coordinates += "#{gridStart} #{gridHeightEnd} -1 "
+      coordinateConnections += "#{connections} #{connections + 1} -1 "
+      gridStart = Math.roundTo(gridStart + 0.6, 2)
+      connections += 2
+
+    ### Horizontal Lines on the Grid ###
+    gridStart = gridHeightStart
+    while gridStart <= gridHeightEnd
+      coordinates += "#{gridWidthStart} #{gridStart} -1 "
+      coordinates += "#{gridWidthEnd} #{gridStart} -1 "
+      coordinateConnections += "#{connections} #{connections + 1} -1 "
+      gridStart = Math.roundTo(gridStart + 0.6, 2)
+      connections += 2
+
+    ### set the final strings to the proper place ###
+    set = shape.append('indexedLineSet')
+      .attr('coordIndex', '#{coordinateConnections}')
+    set.append('coordinate').attr('point', "#{coordinates}")
+
 ### Create some views ###
 x3dWrapper.createViewpoint("Top View", "0 0 0",
   "0 0 #{bounds.getTopDistance()}", "0.0 0.0 0.0 0.0", '0.75')
 x3dWrapper.createViewpoint("Front View", "0 0 0",
-  "0 0 #{bounds.getFrontDistance()}", "1.0 0.0 0.0 1.570", '0.95')
+  "0 #{bounds.getFrontDistance()} 0", "1.0 0.0 0.0 1.570", '0.95')
 x3dWrapper.createViewpoint("Left View", "0 0 0",
-  "#{-1 * bounds.getSideDistance()} 0 0.25",
-  "-0.50 0.50 0.50 #{2.093*2}", '0.95')
+  "#{-1 * bounds.getSideDistance()} 0 4.0",
+  "-0.50 0.50 0.50 #{2.093*2}", '0.75')
 x3dWrapper.createViewpoint("Right View", "0 0 0",
   "#{bounds.getSideDistance()} 0 0.25", "0.50 0.50 0.50 2.093", '0.95')
 x3dWrapper.createViewpoint("Back View", "0 0 0",
@@ -160,8 +252,8 @@ getTopThreeValues = (data, property, className, units) ->
   counter = 0
   ### write the string into the innerHTML ###
   while counter < maxValueList.length
-    selectClass = className + (counter + 1)
-    document.getElementsByClassName(selectClass)[0].innerHTML = stringValues[counter]
+    target = className + (counter + 1)
+    document.getElementsByClassName(target)[0].innerHTML = stringValues[counter]
     counter++
     
   return
@@ -188,50 +280,8 @@ clearAllSelected = (className)->
   ### Will Use jQuery .removeClass(str) ###
   return
 
-### Main display function ###
-display = ( data ) ->
-  ### for every piece of data  ###
-  transforms = scene.selectAll('transform').data(data)
-
-  ### Append a transform and a shape to each transform ###
-  ### they have a unique id and a class of rack ###
-  ### id and class are not needed yet. Plan to use them for hover over ###
-  shapesEnter = transforms.enter().append('transform')
-    .append('shape').data(data)
-      .attr('id', (d)-> 'rack'+d.componentId)
-      .attr('class', 'rack')
-
-  ### give each transform some transitions to move the boxes ###
-  transforms.transition().attr('translation', (d, i) ->
-    console.log d.adjustedXPosition, d.adjustedYPosition
-    d.adjustedXPosition + ' ' + d.adjustedYPosition + ' 0.0'
-  )
-
-  ### append a material to each shape with a material element within it ###
-  shapesEnter.append('appearance').append('material')
-
-  ### within the material set the color by calling the getRackColor function ###
-  ### contains some transitions between colors ###
-  scene.selectAll('material').data(data).transition().duration(1000).delay(500)
-    .attr('diffuseColor', (d)-> getRackColor(d))
-
-  ### append a box to each shape ###
-  ### set the size of each box to the data of the rack ###
-  shapesEnter.append('box').data(data)
-    .attr('size', (data) -> data.floorPlanWidth + ' ' +
-      (data.floorPlanHeight - 0.1) + ' ' + data.height)
-
-  ### Not sure what this does here is more info
-  https://github.com/mbostock/d3/wiki/Selections ###
-  transforms.exit()
-
-  ### update the leaders of each property ###
-  getTopLists(data)
-
-  return
-
 ### this runs on a set interval just in case the data changes ###
-setInterval (-> display data), 10000
+setInterval (-> x3dWrapper.display data), 10000
 
 getRackColor = (data) ->
   badDataFlag = false
@@ -249,8 +299,6 @@ getRackColor = (data) ->
     else
       badDataFlag = true
 
-
-
   ### change color based on max value and current value ###
   ### color will be on a scale of green to red ###
   if value < 0.5
@@ -262,11 +310,12 @@ getRackColor = (data) ->
 
   ### Convert the red and green decimal values into a hex value ###
   ### no ternary in coffeescript ###
-  redString = (if red < 16 then "0" else "") + r.toString(16)
-  greenString = (if green < 16 then "0" else "") + g.toString(16)
+  redString = (if red < 16 then "0" else "") + red.toString(16)
+  greenString = (if green < 16 then "0" else "") + green.toString(16)
 
   color = "#" + redString + greenString + "00"
   color = "steelblue" if badDataFlag
+  color
 
 ### remove all .selected-view and asign it to a the called item ###
 toggleCamera = ->
@@ -281,57 +330,11 @@ toggleColor = ->
   clearAllSelected('selected-color')
   @className += " selected-color"
   ### redisplay the color to show changed color ###
-  display(data)
+  x3dWrapper.display(data)
   return
 
-gridSetup = (bounds)->
-  ### Attach a shape to the scene ###
-  ### Give it a light grey color with transparency ###
-  shape = scene.append('Transform').append('shape').attr('id', 'grid')
-  shape.append('appearance').append('material')
-    .attr('id', 'gridMaterial').attr('diffuseColor', '0.8, 0.8, 0.8')
-    .attr('transparency','0.65')
-  ### coordinateConnections: string representing connection of coordinates
-    all coordinates are connected until it reaches a -1
-    1, 2, -1, 3, 4 will connect coordinate 1 and 2
-    but will not connect coordinate 2 and 3
-  ###
-  coordinateConnections = ""
-  ### coordinates is a string representing the coordinates (x, y, z) ###
-  coordinates = ""
-  ### connections signifies what set of line user is on ###
-  connections = 0
-
-  ### rounding to a .6 because that is the standard grid interval ###
-  gridHeightStart = Math.roundTo(Math.ceil((bounds.boundingBox.minY - bounds.maxHeight) / 0.6 - 1) * 0.6, 2)
-  gridHeightEnd = Math.roundTo(Math.ceil((bounds.boundingBox.maxY + bounds.maxHeight) / 0.6+ 1) * 0.6, 2)
-  gridWidthStart = Math.roundTo(Math.ceil((bounds.boundingBox.minX - bounds.maxWidth) / 0.6 - 1) * 0.6, 2)
-  gridWidthEnd = Math.roundTo(Math.ceil((bounds.boundingBox.maxX + bounds.maxWidth) / 0.6 + 1) * 0.6, 2)
-  ### Verticle lines on the Grid ###
-  gridStart = gridWidthStart
-  while gridStart <= gridWidthEnd
-    coordinates += "#{gridStart} #{gridHeightStart} -1 "
-    coordinates += "#{gridStart} #{gridHeightEnd} -1 "
-    coordinateConnections += "#{connections} #{connections + 1} -1 "
-    gridStart = Math.roundTo(gridStart + 0.6, 2)
-    connections += 2
-
-  ### Horizontal Lines on the Grid ###
-  gridStart = gridHeightStart
-  while gridStart <= gridHeightEnd
-    coordinates += "#{gridWidthStart} #{gridStart} -1 "
-    coordinates += "#{gridWidthEnd} #{gridStart} -1 "
-    coordinateConnections += "#{connections} #{connections + 1} -1 "
-    gridStart = Math.roundTo(gridStart + 0.6, 2)
-    connections += 2
-
-  ### set the final strings to the proper place ###
-  set = shape.append('indexedLineSet')
-    .attr('coordIndex', '#{coordinateConnections}')
-  set.append('coordinate').attr('point', "#{coordinates}")
-
 ### setup the grid ###
-gridSetup(bounds)
+x3dWrapper.setupGrid(bounds)
 
 ### shuffle between different views ###
 ### there is a bug in the code ###
@@ -347,14 +350,14 @@ shuffleView = ->
   else
     selectedNumber = 0
 
-  newView = document.getElementsByClassName("#{'view'+selectedNumber.toString()}")[0]
+  newView = document.getElementsByClassName("#{'view'+selectedNumber}")[0]
   clearAllSelected('selected-view')
   ### give the new view the correct class name for the css ###
   newView.className += " selected-view"
   ### call the new view so it will change the view of the 3D model ###
   document.getElementById(newView.value).setAttribute('set_bind','true')
   
-  display(data)
+  x3dWrapper.display(data)
   return
 
 window.onload = ->
@@ -365,7 +368,7 @@ window.onload = ->
   ### this will turn off movement controls ###
   ### document.getElementById('x3dElement').runtime.noNav() ###
 
-  display(data)
+  x3dWrapper.display(data)
 
   ### this will toggle the grid transpareaancy  ###
   document.getElementById('grid-toggle').onclick = ->
@@ -377,7 +380,7 @@ window.onload = ->
 
   ### if shuffle is clicked it will call shuffleView every 10sec ###
   document.getElementById('view-shuffle').onclick = ->
-    ### shuffleId is declared outside the scope of the if 
+    ### shuffleId is declared outside the scope of the if
         coffeescript automatically declares variables at the next level ###
     if document.getElementById('view-shuffle').checked is true
       shuffleId = setInterval (-> shuffleView()), 10000
