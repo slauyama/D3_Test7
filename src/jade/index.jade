@@ -36,6 +36,9 @@ html
 		div.fltClear
 		// x3d#x3dElement will contains all 3D elements
 		x3d#x3dElement.fltLeft
+			// added buttons. buttons do not currently work
+			button#zoom-in Zoom In
+			button#zoom-out Zoom Out
 		// #rack-data is designed so that a hover of a rack will bring up the necessary data.
 		// This does not work
 		div#rack-data
@@ -48,7 +51,7 @@ html
 				li#ComponentID-Data 1471
 				li#Name-Data 50M
 				li#Power-Data 115/0/300
-				li#Temperature-Data 16/0/35000
+				li#Heat-Data 16/0/35000
 				li#Weight-Data 16/0/500
 				li#UsedUnits-Data 1/0
 				li#UnitLocation-Data 1
@@ -61,7 +64,7 @@ html
 			h2 Rack Leaders:
 			// ul#leader-list will show the top 3 leaders of a certain category.
 			ul#leader-list
-				each descriptor, index in ["Power", "Temperature", "Weight", "Used Units","Largest Unit Location", "Largest Unit Size"]
+				each descriptor, index in ["Power", "Heat", "Weight", "Used Units","Largest Unit Location", "Largest Unit Size"]
 					ol(id="#{descriptor.replace(' ','-').toLowerCase()}-leader" class="leader")
 						h3= descriptor + ":"
 						each index in [1,2,3]

@@ -2,9 +2,6 @@
 # Personal Library for Functions
 "use strict"
 
-### Largest Numbber in javascript ###
-HIGH_NUM = 9007199254740992
-
 ### Function rounds numbers to decimal certain decimal place ###
 ### Takes in a num and a round to point ###
 Math.roundTo = (num, amount = 0) ->
@@ -16,6 +13,7 @@ console.logDate = ->
     timestamp = '[' + new Date().toUTCString() + '] '
     console.log(timestamp, arguments)
 
+### could use underscore will implement t later ###
 ### Returns if a value is a number or not ###
 isNumber = (n) ->
   !isNaN(parseFloat(n)) && isFinite(n)

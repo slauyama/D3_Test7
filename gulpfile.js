@@ -17,9 +17,9 @@ var clean = require('gulp-clean'),
 	uglify = require('gulp-uglify'); 
 
 // Input File Paths
-var htmlSrc = 'src/html/*.jade',
-	cssSrc = 'src/css/*.scss',
-	jsSrc = 'src/js/*.coffee';
+var htmlSrc = 'src/jade/*.jade',
+	cssSrc = 'src/scss/*.scss',
+	jsSrc = 'src/coffee/*.coffee';
 
 /** FUNCTIONS **/ 
 
@@ -38,7 +38,7 @@ gulp.task('default', function() {
 
 //CSS - will compile and minify scss
 gulp.task('sass', function() {
-	return gulp.src('src/css/main.scss')
+	return gulp.src('src/scss/main.scss')
 		.pipe(plumber())
 		.pipe(sass({noCache: true}))
 	    .pipe(gulp.dest('css/'))
@@ -50,7 +50,7 @@ gulp.task('sass', function() {
 
 // Scripts - will compile, concat, and minify scripts
 gulp.task('coffee', function() {
-  	return gulp.src(['src/js/lib.coffee', jsSrc])
+  	return gulp.src(['src/coffee/utility.coffee', jsSrc])
 		.pipe(coffeelint())
         .pipe(coffeelint.reporter())
 		.pipe(concat('main.js'))
@@ -67,7 +67,7 @@ gulp.task('coffee', function() {
 
 // Compile individual
 gulp.task('compile', function() {
-  	return gulp.src(['src/js/lib.coffee', jsSrc])
+  	return gulp.src(['src/coffee/utility.coffee', jsSrc])
 		.pipe(plumber())
 		.pipe(coffee())
 		.pipe(jshint())
