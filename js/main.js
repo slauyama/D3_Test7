@@ -385,9 +385,9 @@
 
   x3dWrapper.createViewpoint("Front View", "0 0 0", "0 " + (bounds.getFrontDistance()) + " 0", "1.0 0.0 0.0 1.570", '0.95');
 
-  x3dWrapper.createViewpoint("Left View", "0 0 0", "" + (-1 * bounds.getSideDistance()) + " 0 4.0", "-0.50 0.50 0.50 " + (2.093 * 2), '0.75');
+  x3dWrapper.createViewpoint("Left View", "0 0 0", "" + (-1 * bounds.getSideDistance()) + " 0 0", "-0.50 0.50 0.5 " + (2.093 * 2), '0.75');
 
-  x3dWrapper.createViewpoint("Right View", "0 0 0", "" + (bounds.getSideDistance()) + " 0 0.25", "0.50 0.50 0.50 2.093", '0.95');
+  x3dWrapper.createViewpoint("Right View", "0 0 0", "" + (bounds.getSideDistance()) + " 0 0.25", "0.50 0.50 0.50 2.093", '0.75');
 
   x3dWrapper.createViewpoint("Back View", "0 0 0", "0 " + (bounds.getBackDistance()) + " -.5", "0.0 0.75 0.65 3.14", '0.95');
 
@@ -415,19 +415,21 @@
   /* finds max number of a specific property within the data */
 
   findMaxNumbers = function(data, property, length) {
-    var iterator, limit, list;
+    var findMax, iterator, limit, list;
     list = [];
     iterator = 0;
     limit = Number.MAX_VALUE;
-    while (iterator < length) {
-      list[iterator] = d3.max(data, function(data) {
+    findMax = function(data, limit) {
+      return d3.max(data, function(data) {
         var value;
         value = data[property];
         if (isNumber(value) && value < limit) {
           return value;
         }
       });
-      console.log(list[iterator]);
+    };
+    while (iterator < length) {
+      list[iterator] = findMax(data, limit);
       limit = list[iterator];
       iterator++;
     }
@@ -438,25 +440,36 @@
   /* displays the top 3 leaders of one property */
 
   getTopThreeValues = function(data, property, className, units) {
-    var counter, dataSubset, maxValueList, stringValues, target;
-    console.log(property);
+    var counter, dataSubset, datum, filterData, maxValueList, stringValues, target, _i, _len;
     maxValueList = findMaxNumbers(data, property, 3);
     stringValues = [];
+
+    /* Dummy Function used to avoid making function in loop */
+
+    /* Filters all data that match the same property */
+    filterData = (function() {
+      var _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = data.length; _i < _len; _i++) {
+        datum = data[_i];
+        _results.push(datum[property] === maxValueList[counter]);
+      }
+      return _results;
+    })();
     counter = 0;
     while (counter < maxValueList.length) {
 
       /* filter out all data with a particular value */
-      dataSubset = data.filter(function(data) {
-        return data[property] === maxValueList[counter];
-      });
+      dataSubset = filterData();
 
       /* change value to a string and add the units */
       stringValues[counter] = maxValueList[counter] + units + " rack" + (dataSubset.length > 1 ? "s:" : ":");
 
       /* add the names of the rack to the string */
-      dataSubset.forEach(function(data) {
-        return stringValues[counter] += " " + data.name;
-      });
+      for (_i = 0, _len = dataSubset.length; _i < _len; _i++) {
+        datum = dataSubset[_i];
+        stringValues[counter] += " " + datum.name;
+      }
 
       /* add the number of rack to the string */
       stringValues[counter] += " (" + dataSubset.length + " total)";

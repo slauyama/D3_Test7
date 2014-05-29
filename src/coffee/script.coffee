@@ -173,10 +173,11 @@ x3dWrapper.createViewpoint("Top View", "0 0 0",
 x3dWrapper.createViewpoint("Front View", "0 0 0",
   "0 #{bounds.getFrontDistance()} 0", "1.0 0.0 0.0 1.570", '0.95')
 x3dWrapper.createViewpoint("Left View", "0 0 0",
-  "#{-1 * bounds.getSideDistance()} 0 4.0",
-  "-0.50 0.50 0.50 #{2.093*2}", '0.75')
+  "#{-1 * bounds.getSideDistance()} 0 0",
+  "-0.50 0.50 0.5 #{2.093*2}", '0.75')
 x3dWrapper.createViewpoint("Right View", "0 0 0",
-  "#{bounds.getSideDistance()} 0 0.25", "0.50 0.50 0.50 2.093", '0.95')
+  "#{bounds.getSideDistance()} 0 0.25",
+  "0.50 0.50 0.50 2.093", '0.75')
 x3dWrapper.createViewpoint("Back View", "0 0 0",
   "0 #{bounds.getBackDistance()} -.5", "0.0 0.75 0.65 3.14", '0.95')
 x3dWrapper.createViewpoint("Perspective", "0 0 0",
@@ -213,16 +214,19 @@ rackDataFunc = (data) ->
 ### finds max number of a specific property within the data ###
 findMaxNumbers = (data, property, length) ->
   list = []
+
   iterator = 0
   limit = Number.MAX_VALUE
 
-  while (iterator < length)
-    list[iterator] = d3.max(data, (data) ->
+  findMax = (data, limit) ->
+    d3.max(data, (data)->
       value = data[property]
       if isNumber(value) and value < limit
         return value
     )
-    console.log list[iterator]
+
+  while (iterator < length)
+    list[iterator] = findMax(data, limit)
     limit = list[iterator]
     iterator++
 
@@ -230,21 +234,24 @@ findMaxNumbers = (data, property, length) ->
 
 ### displays the top 3 leaders of one property ###
 getTopThreeValues = (data, property, className, units) ->
-  console.log property
   maxValueList = findMaxNumbers(data, property, 3)
   stringValues = []
 
+  ### Dummy Function used to avoid making function in loop ###
+  ### Filters all data that match the same property ###
+  filterData = (datum[property] is maxValueList[counter] for datum in data)
+  
   counter = 0
   while counter < maxValueList.length
     ### filter out all data with a particular value ###
-    dataSubset = data.filter((data)-> data[property] is maxValueList[counter])
+    dataSubset = filterData()
     
     ### change value to a string and add the units###
     stringValues[counter] = maxValueList[counter] + units +
       " rack" + (if dataSubset.length > 1 then "s:" else ":")
     
     ### add the names of the rack to the string ###
-    dataSubset.forEach((data) -> stringValues[counter] += " " + data.name)
+    stringValues[counter] += " " + datum.name for datum in dataSubset
     ### add the number of rack to the string ###
     stringValues[counter] += " (#{dataSubset.length} total)"
     counter++
