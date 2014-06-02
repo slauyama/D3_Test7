@@ -183,12 +183,21 @@ data = data.filter((data) ->
   isNumber(data.floorPlanHeight)
 )
 
-# REVIEW SA - In an effort to think more OOP, I
+# REVIEW SA - In an effort to think more OOP, I'
+var Rack = Backbone.model.extend({
+  
+  })
 
-#  var RackInformation = Backbone.Model.extend({
+# var Racks = Backbone.Collection.extend({
+  model: Rack
+# })
+
+var racks = new Racks();
+
+#  var RackProgram = Backbone.Model.extend({
 #     default: function(){
 #        return {
-#           dataList: []
+#           racks: racks
 #        };
 #     },
 #

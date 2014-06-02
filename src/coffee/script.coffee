@@ -244,8 +244,8 @@ getTopThreeValues = (data, property, className, units) ->
   counter = 0
   while counter < maxValueList.length
     ### filter out all data with a particular value ###
-    dataSubset = filterData()
-    
+    dataSubset = filterData
+    console.log dataSubset
     ### change value to a string and add the units###
     stringValues[counter] = maxValueList[counter] + units +
       " rack" + (if dataSubset.length > 1 then "s:" else ":")
