@@ -9,8 +9,6 @@ jade - http://jade-lang.com/
 
 
 More informative commit messages. I would like to be able to tell what changes you've made just by looking at your commit messages.
-- CreateViewPoint always seems to take "0 0 0" as a param -- maybe make it a default value?
-- Same with createPointLight
 - Still suggesting using jQuery.
 - maybe used a named function for onmouseover -- confusing what goal is
 - generally, instead of leaving big blocks of commented out code in your code, just remove and commit with an informative log message. You can look it up in SVN later if you need it.

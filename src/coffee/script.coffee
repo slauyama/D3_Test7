@@ -194,21 +194,6 @@ x3dWrapper.createPointlight('.50', '1.0 1.0 1.0', '1.0000 0.0000 0.0000',
 ### Dummy function that is supposed to act as a tool tip ###
 ### Not implemented - Future will add a template ###
 rackDataFunc = (data) ->
-  # document.getElementById('ComponentID-Data').innerHTML = data.componentId
-  # document.getElementById('Name-Data').innerHTML = data.name
-  # document.getElementById('Power-Data').innerHTML =
-  #   data.powerCurrent+"/"+data.powerPlanned+"/"+data.powerMax
-  # document.getElementById('Temperature-Data').innerHTML =
-    # data.heatCurrent+"/"+data.heatPlanned+"/"+data.coolingMax
-  # document.getElementById('Weight-Data').innerHTML =
-    # data.weightCurrent+"/"+data.weightPlanned+"/"+data.weightMax
-  # document.getElementById('UsedUnits-Data').innerHTML =
-    # data.usedUnitsCurrent+"/"+data.usedUnitsPlanned
-  # document.getElementById('UnitLocation-Data').innerHTML =
-    # data.largestUnitLocation
-  # document.getElementById('UnitSize-Data').innerHTML = data.largestUnitSize
-  # document.getElementById('PowerAD-Data').innerHTML =
-    # data.powerActualDerivation
   return
 
 ### finds max number of a specific property within the data ###
