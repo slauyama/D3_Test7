@@ -13,7 +13,7 @@ console.logDate = ->
     timestamp = '[' + new Date().toUTCString() + '] '
     console.log(timestamp, arguments)
 
-### could use underscore will implement t later ###
+### could use underscore will implement it later when convert to MVC ###
 ### Returns if a value is a number or not ###
 isNumber = (n) ->
   !isNaN(parseFloat(n)) && isFinite(n)

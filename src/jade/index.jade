@@ -10,7 +10,6 @@ html
 		link(rel="stylesheet" type="text/css" href="css/main.min.css")
 	
 	body
-		- var iterator = 0
 		div.rack-view-options.fltLeft
 			h2 Camera Options:
 			// div.camera-option contains all the different views you can toggle through.
@@ -67,8 +66,8 @@ html
 				each descriptor, index in ["Power", "Heat", "Weight", "Used Units","Largest Unit Location", "Largest Unit Size"]
 					ol(id="#{descriptor.replace(' ','-').toLowerCase()}-leader" class="leader")
 						h3= descriptor + ":"
-						each index in [1,2,3]
-							li(class="leader-item #{descriptor.replace(/\s/g,'-').toLowerCase()+index}") N/A
+						each innerIndex in [1,2,3]
+							li(class="leader-item #{descriptor.replace(/\s/g,'-').toLowerCase()+innerIndex}") N/A
 					if index === 2
 						// Added an additional div to have 3 lists on top and 3 lists on bottom
 						div.fltClear

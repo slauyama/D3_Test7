@@ -7,6 +7,20 @@ x3dom - http://www.x3dom.org/
 sass - http://sass-lang.com/
 jade - http://jade-lang.com/
 
+
+More informative commit messages. I would like to be able to tell what changes you've made just by looking at your commit messages.
+- CreateViewPoint always seems to take "0 0 0" as a param -- maybe make it a default value?
+- Same with createPointLight
+- Still suggesting using jQuery.
+- maybe used a named function for onmouseover -- confusing what goal is
+- generally, instead of leaving big blocks of commented out code in your code, just remove and commit with an informative log message. You can look it up in SVN later if you need it.
+- move createVIewPoint/createPOintLight into an initialize function for x3d wrapper and then just call initialize instead of having them all outside the object.
+
+- findMaxNumbers seems like a utility function, maybe move it out of script and into utility, maybe possible to do the same with getTopThreeValues
+
+- toggleCamera/toggleColor/shuffleView seem to be lonely -- consider a wrapper object for them, too. Not sure what it would look like at this point in time, but 
+the idea is to not ever leave random functions just hanging. Always inside of an object, whether that is inside of utility or inside just a wrapper, but it helps to slowly form an OOP.
+
 To Do
 Hover over data racks Tool tips 
 	http://www.x3dom.org/x3dom/test/functional/indexedLineSet.html
