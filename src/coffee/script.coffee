@@ -56,6 +56,32 @@ x3d = d3.select("#x3dElement").attr("height", "400px").attr("width", "700px")
 x3dWrapper =
   ### Target the main x3d element ###
   
+  initialize: ->
+    ### Create some views ###
+    @createViewpoint("Top View", "0 0 0",
+      "0 0 #{bounds.getTopDistance()}", "0.0 0.0 0.0 0.0", '0.75')
+    @createViewpoint("Front View", "0 0 0",
+      "0 #{bounds.getFrontDistance()} 0", "1.0 0.0 0.0 1.570", '0.95')
+    @createViewpoint("Left View", "0 0 0",
+      "#{-1 * bounds.getSideDistance()} 0 0",
+      "-0.50 0.50 0.5 #{2.093*2}", '0.75')
+    @createViewpoint("Right View", "0 0 0",
+      "#{bounds.getSideDistance()} 0 0.25",
+      "0.50 0.50 0.50 2.093", '0.75')
+    @createViewpoint("Back View", "0 0 0",
+      "0 #{bounds.getBackDistance()} -.5", "0.0 0.75 0.65 3.14", '0.95')
+    @createViewpoint("Perspective", "0 0 0",
+      "#{bounds.getBackDistance() / 3} #{-bounds.getSideDistance()} #{bounds.getTopDistance() / 3}",
+      "1.0 0.25 0.25 1.25", '0.95')
+    ### Custom View Removed ###
+
+    ### Create a Right and Left point Light ###
+    @createPointlight('.50', '1.0 1.0 1.0', '1.0000 0.0000 0.0000',
+      "#{bounds.getSideDistance()} 0 0", '200.0')
+    @createPointlight('.50', '1.0 1.0 1.0', '1.0000 0.0000 0.0000',
+      "#{-1 * bounds.getSideDistance()} 0 0", '200.0')
+
+    return
 
   ### There is one scene element per x3d element ###
   scene: x3d.append("scene")
@@ -167,34 +193,6 @@ x3dWrapper =
       .attr('coordIndex', '#{coordinateConnections}')
     set.append('coordinate').attr('point', "#{coordinates}")
 
-### Create some views ###
-x3dWrapper.createViewpoint("Top View", "0 0 0",
-  "0 0 #{bounds.getTopDistance()}", "0.0 0.0 0.0 0.0", '0.75')
-x3dWrapper.createViewpoint("Front View", "0 0 0",
-  "0 #{bounds.getFrontDistance()} 0", "1.0 0.0 0.0 1.570", '0.95')
-x3dWrapper.createViewpoint("Left View", "0 0 0",
-  "#{-1 * bounds.getSideDistance()} 0 0",
-  "-0.50 0.50 0.5 #{2.093*2}", '0.75')
-x3dWrapper.createViewpoint("Right View", "0 0 0",
-  "#{bounds.getSideDistance()} 0 0.25",
-  "0.50 0.50 0.50 2.093", '0.75')
-x3dWrapper.createViewpoint("Back View", "0 0 0",
-  "0 #{bounds.getBackDistance()} -.5", "0.0 0.75 0.65 3.14", '0.95')
-x3dWrapper.createViewpoint("Perspective", "0 0 0",
-  "#{bounds.getBackDistance() / 3} #{-bounds.getSideDistance()} #{bounds.getTopDistance() / 3}",
-  "1.0 0.25 0.25 1.25", '0.95')
-### Custom View Removed ###
-
-### Create a Right and Left point Light ###
-x3dWrapper.createPointlight('.50', '1.0 1.0 1.0', '1.0000 0.0000 0.0000',
-  "#{bounds.getSideDistance()} 0 0", '200.0')
-x3dWrapper.createPointlight('.50', '1.0 1.0 1.0', '1.0000 0.0000 0.0000',
-  "#{-1 * bounds.getSideDistance()} 0 0", '200.0')
-
-### Dummy function that is supposed to act as a tool tip ###
-### Not implemented - Future will add a template ###
-rackDataFunc = (data) ->
-  return
 
 ### finds max number of a specific property within the data ###
 findMaxNumbers = (data, property, length) ->
