@@ -193,6 +193,7 @@ x3dWrapper =
       .attr('coordIndex', '#{coordinateConnections}')
     set.append('coordinate').attr('point', "#{coordinates}")
 
+x3dWrapper.initialize()
 
 ### finds max number of a specific property within the data ###
 findMaxNumbers = (data, property, length) ->
@@ -352,6 +353,7 @@ shuffleView = ->
 
 window.onload = ->
   ### options setup. Initializes the button to proper function ###
+  ### assigns every child element of class color-options will call toggleColor on mouseover ###
   colorButton.onmouseover = toggleColor for colorButton in document.getElementsByClassName('color-option')[0].children
   cameraButton.onmouseover = toggleCamera for cameraButton in document.getElementsByClassName('camera-option')[0].children
 

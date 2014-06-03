@@ -7,18 +7,6 @@ x3dom - http://www.x3dom.org/
 sass - http://sass-lang.com/
 jade - http://jade-lang.com/
 
-
-More informative commit messages. I would like to be able to tell what changes you've made just by looking at your commit messages.
-- Still suggesting using jQuery.
-- maybe used a named function for onmouseover -- confusing what goal is
-- generally, instead of leaving big blocks of commented out code in your code, just remove and commit with an informative log message. You can look it up in SVN later if you need it.
-- move createVIewPoint/createPOintLight into an initialize function for x3d wrapper and then just call initialize instead of having them all outside the object.
-
-- findMaxNumbers seems like a utility function, maybe move it out of script and into utility, maybe possible to do the same with getTopThreeValues
-
-- toggleCamera/toggleColor/shuffleView seem to be lonely -- consider a wrapper object for them, too. Not sure what it would look like at this point in time, but 
-the idea is to not ever leave random functions just hanging. Always inside of an object, whether that is inside of utility or inside just a wrapper, but it helps to slowly form an OOP.
-
 To Do
 Hover over data racks Tool tips 
 	http://www.x3dom.org/x3dom/test/functional/indexedLineSet.html
@@ -33,9 +21,7 @@ Add a filter for the racks
 Interactive buttons within the cavnas
 	http://www.x3dom.org/?page_id=1483
 Need to use more D3 management
-Figure lighting to make better
 Want to update animation popping up of boxes
-Use the minified javascript
 Test in IE8
 
 Bugs / Issues
