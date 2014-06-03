@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="css/main.min.css">
   </head>
   <body>
-    <div class="rack-view-options fltLeft">
+    <div class="rack-view-options floatLeft">
       <h2>Camera Options:</h2>
       <!-- div.camera-option contains all the different views you can toggle through.-->
       <div class="buttons camera-option">
@@ -36,9 +36,9 @@
         <input id="view-shuffle" type="checkbox" class="checkbox">
       </div>
     </div>
-    <div class="fltClear"></div>
+    <div class="floatClear"></div>
     <!-- x3d#x3dElement will contains all 3D elements-->
-    <x3d id="x3dElement" class="fltLeft">
+    <x3d id="x3dElement" class="floatLeft">
       <!-- added buttons. buttons do not currently work-->
       <button id="zoom-in">Zoom In</button>
       <button id="zoom-out">Zoom Out</button>
@@ -47,7 +47,7 @@
     <!-- This does not work-->
     <div id="rack-data">
       <h2>Rack Information:</h2>
-      <ul class="alignRight fltLeft">
+      <ul class="alignRight floatLeft">
         <li>Component ID: </li>
         <li>Name: </li>
         <li>Power (C/P/M): </li>
@@ -58,7 +58,7 @@
         <li>Largest Unit Size: </li>
         <li>Power Actual Derivation: </li>
       </ul>
-      <ul class="fltRight">
+      <ul class="floatRight">
         <li id="ComponentID-Data">1471</li>
         <li id="Name-Data">50M</li>
         <li id="Power-Data">115/0/300</li>
@@ -69,9 +69,9 @@
         <li id="UnitSize-Data">41</li>
         <li id="PowerAD-Data">115</li>
       </ul>
-      <p class="fltClear footnotes">*C - Current, P - Planned, M - Max</p><br>
+      <p class="floatClear footnotes">*C - Current, P - Planned, M - Max</p><br>
     </div>
-    <div id="leader-data" class="fltLeft fltClear">
+    <div id="leader-data" class="floatLeft floatClear">
       <h2>Rack Leaders:</h2>
       <!-- ul#leader-list will show the top 3 leaders of a certain category.-->
       <ul id="leader-list">
@@ -94,7 +94,7 @@
           <li class="leader-item weight3">N/A</li>
         </ol>
         <!-- Added an additional div to have 3 lists on top and 3 lists on bottom-->
-        <div class="fltClear"></div>
+        <div class="floatClear"></div>
         <ol id="used-units-leader" class="leader">
           <h3>Used Units:</h3>
           <li class="leader-item used-units1">N/A</li>

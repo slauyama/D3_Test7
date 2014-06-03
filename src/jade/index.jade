@@ -10,7 +10,7 @@ html
 		link(rel="stylesheet" type="text/css" href="css/main.min.css")
 	
 	body
-		div.rack-view-options.fltLeft
+		div.rack-view-options.floatLeft
 			h2 Camera Options:
 			// div.camera-option contains all the different views you can toggle through.
 			div.buttons.camera-option
@@ -32,9 +32,9 @@ html
 				label(for="view-shuffle") Shuffle Views:
 				input#view-shuffle.checkbox(type="checkbox" checked=false)
 
-		div.fltClear
+		div.floatClear
 		// x3d#x3dElement will contains all 3D elements
-		x3d#x3dElement.fltLeft
+		x3d#x3dElement.floatLeft
 			// added buttons. buttons do not currently work
 			button#zoom-in Zoom In
 			button#zoom-out Zoom Out
@@ -42,11 +42,11 @@ html
 		// This does not work
 		div#rack-data
 			h2 Rack Information:
-			ul.alignRight.fltLeft
+			ul.alignRight.floatLeft
 				each descriptor in ["Component ID", "Name", "Power (C/P/M)", "Temperature (C/P/M)", "Weight (C/P/M)", "Used Units (C/P)","Largest Unit Location", "Largest Unit Size", "Power Actual Derivation"]
 					li= descriptor + ": "
 
-			ul(class="fltRight")
+			ul(class="floatRight")
 				li#ComponentID-Data 1471
 				li#Name-Data 50M
 				li#Power-Data 115/0/300
@@ -56,10 +56,10 @@ html
 				li#UnitLocation-Data 1
 				li#UnitSize-Data 41
 				li#PowerAD-Data 115
-			p.fltClear.footnotes *C - Current, P - Planned, M - Max
+			p.floatClear.footnotes *C - Current, P - Planned, M - Max
 			br/
 
-		div#leader-data.fltLeft.fltClear
+		div#leader-data.floatLeft.floatClear
 			h2 Rack Leaders:
 			// ul#leader-list will show the top 3 leaders of a certain category.
 			ul#leader-list
@@ -70,6 +70,6 @@ html
 							li(class="leader-item #{descriptor.replace(/\s/g,'-').toLowerCase()+innerIndex}") N/A
 					if index === 2
 						// Added an additional div to have 3 lists on top and 3 lists on bottom
-						div.fltClear
+						div.floatClear
 		// link to all of the scripts I have written.
 		script(src="js/main.js")

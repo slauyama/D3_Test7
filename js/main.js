@@ -4,7 +4,7 @@
   /* Function rounds numbers to decimal certain decimal place */
 
   /* Takes in a num and a round to point */
-  var RackInfo, bounds, clearAllSelected, data, findMaxNumbers, getRackColor, getTopLists, getTopThreeValues, isNumber, rackDataFunc, shuffleView, toggleCamera, toggleColor, x3d, x3dWrapper;
+  var RackInfo, bounds, clearAllSelected, data, findMaxNumbers, getRackColor, getTopLists, getTopThreeValues, isNumber, shuffleView, toggleCamera, toggleColor, x3d, x3dWrapper;
 
   Math.roundTo = function(num, amount) {
     if (amount == null) {
@@ -25,7 +25,7 @@
   };
 
 
-  /* could use underscore will implement t later */
+  /* could use underscore will implement it later when convert to MVC */
 
 
   /* Returns if a value is a number or not */
@@ -262,6 +262,22 @@
   x3dWrapper = {
 
     /* Target the main x3d element */
+    initialize: function() {
+
+      /* Create some views */
+      this.createViewpoint("Top View", "0 0 0", "0 0 " + (bounds.getTopDistance()), "0.0 0.0 0.0 0.0", '0.75');
+      this.createViewpoint("Front View", "0 0 0", "0 " + (bounds.getFrontDistance()) + " 0", "1.0 0.0 0.0 1.570", '0.95');
+      this.createViewpoint("Left View", "0 0 0", "" + (-1 * bounds.getSideDistance()) + " 0 0", "-0.50 0.50 0.5 " + (2.093 * 2), '0.75');
+      this.createViewpoint("Right View", "0 0 0", "" + (bounds.getSideDistance()) + " 0 0.25", "0.50 0.50 0.50 2.093", '0.75');
+      this.createViewpoint("Back View", "0 0 0", "0 " + (bounds.getBackDistance()) + " -.5", "0.0 0.75 0.65 3.14", '0.95');
+      this.createViewpoint("Perspective", "0 0 0", "" + (bounds.getBackDistance() / 3) + " " + (-bounds.getSideDistance()) + " " + (bounds.getTopDistance() / 3), "1.0 0.25 0.25 1.25", '0.95');
+
+      /* Custom View Removed */
+
+      /* Create a Right and Left point Light */
+      this.createPointlight('.50', '1.0 1.0 1.0', '1.0000 0.0000 0.0000', "" + (bounds.getSideDistance()) + " 0 0", '200.0');
+      this.createPointlight('.50', '1.0 1.0 1.0', '1.0000 0.0000 0.0000', "" + (-1 * bounds.getSideDistance()) + " 0 0", '200.0');
+    },
 
     /* There is one scene element per x3d element */
     scene: x3d.append("scene"),
@@ -378,38 +394,7 @@
     }
   };
 
-
-  /* Create some views */
-
-  x3dWrapper.createViewpoint("Top View", "0 0 0", "0 0 " + (bounds.getTopDistance()), "0.0 0.0 0.0 0.0", '0.75');
-
-  x3dWrapper.createViewpoint("Front View", "0 0 0", "0 " + (bounds.getFrontDistance()) + " 0", "1.0 0.0 0.0 1.570", '0.95');
-
-  x3dWrapper.createViewpoint("Left View", "0 0 0", "" + (-1 * bounds.getSideDistance()) + " 0 0", "-0.50 0.50 0.5 " + (2.093 * 2), '0.75');
-
-  x3dWrapper.createViewpoint("Right View", "0 0 0", "" + (bounds.getSideDistance()) + " 0 0.25", "0.50 0.50 0.50 2.093", '0.75');
-
-  x3dWrapper.createViewpoint("Back View", "0 0 0", "0 " + (bounds.getBackDistance()) + " -.5", "0.0 0.75 0.65 3.14", '0.95');
-
-  x3dWrapper.createViewpoint("Perspective", "0 0 0", "" + (bounds.getBackDistance() / 3) + " " + (-bounds.getSideDistance()) + " " + (bounds.getTopDistance() / 3), "1.0 0.25 0.25 1.25", '0.95');
-
-
-  /* Custom View Removed */
-
-
-  /* Create a Right and Left point Light */
-
-  x3dWrapper.createPointlight('.50', '1.0 1.0 1.0', '1.0000 0.0000 0.0000', "" + (bounds.getSideDistance()) + " 0 0", '200.0');
-
-  x3dWrapper.createPointlight('.50', '1.0 1.0 1.0', '1.0000 0.0000 0.0000', "" + (-1 * bounds.getSideDistance()) + " 0 0", '200.0');
-
-
-  /* Dummy function that is supposed to act as a tool tip */
-
-
-  /* Not implemented - Future will add a template */
-
-  rackDataFunc = function(data) {};
+  x3dWrapper.initialize();
 
 
   /* finds max number of a specific property within the data */
@@ -635,6 +620,8 @@
   window.onload = function() {
 
     /* options setup. Initializes the button to proper function */
+
+    /* assigns every child element of class color-options will call toggleColor on mouseover */
     var cameraButton, colorButton, _i, _j, _len, _len1, _ref, _ref1;
     _ref = document.getElementsByClassName('color-option')[0].children;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
