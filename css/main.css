@@ -121,7 +121,9 @@ h3 {
 
 x3d {
   position: relative;
-  margin: 10px; }
+  margin: 10px;
+  height: 400px;
+  width: 700px; }
   x3d canvas {
     border: 1px solid black; }
   x3d button {
