@@ -4,7 +4,7 @@
   /* Function rounds numbers to decimal certain decimal place */
 
   /* Takes in a num and a round to point */
-  var RackInfo, bounds, clearAllSelected, data, findMaxNumbers, getRackColor, getTopLists, getTopThreeValues, isNumber, shuffleView, toggleCamera, toggleColor, x3d, x3dWrapper;
+  var RackInfo, bounds, clearAllSelected, data, findMaxNumbers, getRackColor, getTopLists, getTopThreeValues, isNumber, shuffleView, toggleCamera, toggleColor, x3dWrapper;
 
   Math.roundTo = function(num, amount) {
     if (amount == null) {
@@ -257,8 +257,6 @@
 
   bounds.setBounds();
 
-  x3d = d3.select("#x3dElement").attr("height", "400px").attr("width", "700px");
-
   x3dWrapper = {
 
     /* Target the main x3d element */
@@ -280,7 +278,7 @@
     },
 
     /* There is one scene element per x3d element */
-    scene: x3d.append("scene"),
+    scene: d3.select("#x3dScene"),
 
     /* Append the different viewpoints to the scene */
     createViewpoint: function(id, centerOfRotation, position, orientation, fieldOfView) {

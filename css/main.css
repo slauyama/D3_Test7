@@ -120,11 +120,10 @@ h3 {
     background-image: -webkit-linear-gradient(bottom, #efefef, #dedede); }
 
 x3d {
-  position: relative;
-  margin: 10px;
-  height: 400px;
-  width: 700px; }
+  margin: 10px; }
   x3d canvas {
+    height: 400px;
+    width: 700px;
     border: 1px solid black; }
   x3d button {
     position: absolute;
@@ -134,14 +133,16 @@ x3d {
     border: none;
     background-color: #fff;
     color: #202021; }
-    x3d button#zoom-in {
-      top: 1px;
-      left: 1px; }
-    x3d button#zoom-out {
-      top: 25px;
-      left: 1px; }
     x3d button:hover {
       background-color: #ebebeb; }
+
+#zoom-in {
+  top: 1px;
+  left: 1px; }
+
+#zoom-out {
+  top: 25px;
+  left: 1px; }
 
 #rack-data {
   display: inline-block;
