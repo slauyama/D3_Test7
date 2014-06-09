@@ -15,5 +15,5 @@ console.logDate = ->
 
 ### could use underscore will implement it later when convert to MVC ###
 ### Returns if a value is a number or not ###
-isNumber = (n) ->
-  !isNaN(parseFloat(n)) && isFinite(n)
+isNumber = (number) ->
+  !isNaN(parseFloat(number)) && isFinite(number)

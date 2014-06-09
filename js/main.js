@@ -30,8 +30,8 @@
 
   /* Returns if a value is a number or not */
 
-  isNumber = function(n) {
-    return !isNaN(parseFloat(n)) && isFinite(n);
+  isNumber = function(number) {
+    return !isNaN(parseFloat(number)) && isFinite(number);
   };
 
   RackInfo = function(componentId, name, height, rackWidth, rackDepth, rackOrientation, xPosition, yPosition, numberingOrigin, overlappingAllowed, coolingMax, weightMax, powerMax, largestUnitLocation, largestUnitSize, usedUnitsCurrent, usedUnitsPlanned, weightCurrent, weightPlanned, heatDissipationCurrent, heatDissipationPlanned, powerCurrent, powerPlanned, powerActual, powerActualDerivation, floorPlanWidth, floorPlanHeight) {
